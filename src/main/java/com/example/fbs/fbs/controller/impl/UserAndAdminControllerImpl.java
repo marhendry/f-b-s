@@ -1,5 +1,7 @@
 package com.example.fbs.fbs.controller.impl;
 
+import com.example.fbs.fbs.config.CustomUserDetailsService;
+import com.example.fbs.fbs.config.JwtService;
 import com.example.fbs.fbs.controller.UserAndAdminController;
 import com.example.fbs.fbs.model.dto.UserLoginRequestDto;
 import com.example.fbs.fbs.model.dto.UserRequestDto;
@@ -17,9 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserAndAdminControllerImpl implements UserAndAdminController {
 
     private final ClientAndAdminServiceImpl userService;
-
-//    private final AuthorizationServiceImpl authorizationService;
-
+    private final JwtService jwtService;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Override
     public ResponseEntity<String> registerUser(UserRequestDto registrationRequest) {
@@ -32,8 +33,8 @@ public class UserAndAdminControllerImpl implements UserAndAdminController {
     public ResponseEntity<String> login(UserLoginRequestDto loginRequest) {
         boolean authenticated = userService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
         if (authenticated) {
-//            String token = authorizationService.getToken(loginRequest);
-            return ResponseEntity.ok("Login successful");
+            String token = jwtService.generateToken(customUserDetailsService.loadUserByUsername(loginRequest.getEmail()));
+            return ResponseEntity.ok("Login successful " + token);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Client with provided credentials was not found");
         }

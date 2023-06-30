@@ -1,5 +1,6 @@
 package com.example.fbs.fbs.service.impl;
 
+import com.example.fbs.fbs.config.JwtService;
 import com.example.fbs.fbs.mapper.UserMapper;
 import com.example.fbs.fbs.model.dto.UserRequestDto;
 import com.example.fbs.fbs.model.dto.UserUpdateRequestDto;
@@ -23,6 +24,8 @@ public class ClientAndAdminServiceImpl implements ClientAndAdminService {
     private final UserMapper userMapper;
 
     private final PasswordEncoderImpl passwordEncoder;
+
+    private final JwtService jwtService;
 
     @Override
     public boolean authenticate(String email, String password) {
