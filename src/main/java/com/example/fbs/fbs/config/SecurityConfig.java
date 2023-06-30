@@ -17,7 +17,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    //    private final JwtTokenFilter jwtAuthFilter;
+//        private final JwtTokenFilter jwtAuthFilter;
 //    private final FilterChainExceptionHandler exceptionHandlerFiler;
     private final CorsConfigurationSource configurationSource;
     private final AuthenticationEntryPoint authenticationEntryPoint;
@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests(auth -> auth
                         .antMatchers("/actuator/**").permitAll()
-                        .antMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/system/**", "/flights/**").permitAll()
+                        .antMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/system/**").permitAll()
                         .antMatchers(HttpMethod.GET,  "/a-banking/promo-offer/").permitAll()
                         .antMatchers(HttpMethod.GET, "/a-banking/promo-offer/**").hasAuthority("MANAGER")
                         .antMatchers(HttpMethod.POST, "/a-banking/promo-offer/**").hasAuthority("MANAGER")

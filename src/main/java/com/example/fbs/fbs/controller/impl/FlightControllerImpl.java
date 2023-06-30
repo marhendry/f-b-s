@@ -25,6 +25,7 @@ public class FlightControllerImpl implements FlightController {
     private final FlightMapper flightMapper;
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<FlightDto> createFlight(@RequestBody FlightDto flightDto) {
         Flight flight = flightService.createFlight(flightDto);
         FlightDto createdFlightDto = flightMapper.toDto(flight);
