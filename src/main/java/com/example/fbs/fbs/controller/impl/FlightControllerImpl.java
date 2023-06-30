@@ -1,5 +1,6 @@
 package com.example.fbs.fbs.controller.impl;
 
+import com.example.fbs.fbs.config.JwtService;
 import com.example.fbs.fbs.controller.FlightController;
 import com.example.fbs.fbs.mapper.FlightMapper;
 import com.example.fbs.fbs.model.dto.FlightDto;
@@ -9,10 +10,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,12 +29,35 @@ public class FlightControllerImpl implements FlightController {
 
     private final FlightMapper flightMapper;
 
+    private final JwtService jwtService;
+
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<FlightDto> createFlight(@RequestBody FlightDto flightDto) {
-        Flight flight = flightService.createFlight(flightDto);
-        FlightDto createdFlightDto = flightMapper.toDto(flight);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdFlightDto);
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        String token = extractTokenFromRequest(request);
+        boolean isAdmin = hasAdminAuthority(token);
+
+        if (isAdmin) {
+            Flight flight = flightService.createFlight(flightDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(flightDto);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    private String extractTokenFromRequest(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        }
+        return null;
+    }
+
+    private boolean hasAdminAuthority(String token) {
+        UserDetails userDetails = jwtService.extractUserDetails(token);
+        // Проверяем наличие роли "ADMIN" у пользователя
+        return userDetails.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ADMIN"));
     }
 
     @Override

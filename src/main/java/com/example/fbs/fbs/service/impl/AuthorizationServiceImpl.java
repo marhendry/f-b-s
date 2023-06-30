@@ -2,7 +2,6 @@ package com.example.fbs.fbs.service.impl;//package com.example.flightbooking.ser
 
 //import app.system.booking.flight.config.security.JwtService;
 
-import com.example.fbs.fbs.config.CustomUserDetails;
 import com.example.fbs.fbs.config.JwtService;
 import com.example.fbs.fbs.mapper.UserMapper;
 import com.example.fbs.fbs.model.dto.UserLoginRequestDto;
@@ -28,7 +27,6 @@ private final UserDetailsService userDetailsService;
     public String generateToken(UserLoginRequestDto loginRequestDto) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequestDto.getEmail());
         return jwtService.generateToken(userDetails);
-
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.example.fbs.fbs.repository.UserRepository;
 import com.example.fbs.fbs.service.ClientAndAdminService;
 import com.example.fbs.fbs.utility.impl.PasswordEncoderImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -83,15 +84,3 @@ public class ClientAndAdminServiceImpl implements ClientAndAdminService {
         return currentUser;
     }
 }
-
-//    @Override
-//    public User registerUser(UserRequestDto registrationRequest) {
-//        User user = User.builder()
-//                .name(registrationRequest.getName())
-//                .email(registrationRequest.getEmail())
-//                .password(registrationRequest.getPassword())
-//                .role(Role.USER.toString())
-//                .build();
-//
-//        return userRepository.save(user);
-//    }
