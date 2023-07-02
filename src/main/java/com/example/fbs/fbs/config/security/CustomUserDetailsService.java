@@ -1,6 +1,5 @@
-package com.example.fbs.fbs.config;
+package com.example.fbs.fbs.config.security;
 
-import com.example.fbs.fbs.model.entity.User;
 import com.example.fbs.fbs.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,8 +15,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email).orElseThrow(()
+        return userRepository.findByEmail(email).orElseThrow(()
                 -> new UsernameNotFoundException("User not found"));
-        return user;
     }
 }

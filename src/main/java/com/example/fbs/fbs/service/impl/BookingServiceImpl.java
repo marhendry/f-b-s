@@ -5,10 +5,10 @@ import com.example.fbs.fbs.model.entity.Flight;
 import com.example.fbs.fbs.model.entity.User;
 import com.example.fbs.fbs.repository.BookingRepository;
 import com.example.fbs.fbs.repository.FlightRepository;
-import com.example.fbs.fbs.repository.UserRepository;
 import com.example.fbs.fbs.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
@@ -19,31 +19,33 @@ public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
 
-    private final UserRepository userRepository;
-
     private final FlightRepository flightRepository;
 
     @Override
+    @Transactional
     public Booking bookFlight(Long flightId, User user, int seatCount) {
         Flight bookedFlight = flightRepository.findById(flightId)
                 .orElseThrow(() -> new NotFoundException("Flight not found with id: " + flightId));
 
         int availableSeats = bookedFlight.getSeats();
         if (seatCount > availableSeats) {
-            throw new RuntimeException("No available seats on the flight.");
+            throw new RuntimeException("Not enough available seats on the flight.");
         }
 
-        Booking booking = new Booking();
-        booking.setUser(user);
-        booking.setFlight(bookedFlight);
-        booking.setSeatNumber(seatCount);
-        booking.setBookingTime(LocalDateTime.now());
-
+        Booking booking = createBooking(user, seatCount, bookedFlight);
         bookedFlight.setSeats(availableSeats - seatCount);
 
         bookingRepository.save(booking);
         flightRepository.save(bookedFlight);
 
         return booking;
+    }
+
+    private static Booking createBooking(User user, int seatCount, Flight bookedFlight) {
+        return new Booking()
+            .setUser(user)
+            .setFlight(bookedFlight)
+            .setSeatNumber(seatCount)
+            .setBookingTime(LocalDateTime.now());
     }
 }

@@ -1,4 +1,4 @@
-package com.example.fbs.fbs.config;
+package com.example.fbs.fbs.config.security;
 
 import com.example.fbs.fbs.model.entity.Role;
 import com.example.fbs.fbs.model.entity.User;

@@ -1,6 +1,6 @@
 package com.example.fbs.fbs.controller;
 
-import com.example.fbs.fbs.config.JwtService;
+import com.example.fbs.fbs.config.security.JwtService;
 import com.example.fbs.fbs.mapper.FlightMapper;
 import com.example.fbs.fbs.model.dto.FlightDto;
 import com.example.fbs.fbs.model.entity.Flight;
@@ -45,11 +45,10 @@ public class FlightControllerImpl {
     @PostMapping("/create")
     public ResponseEntity<FlightDto> createFlight(@RequestBody FlightDto flightDto) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        String token = extractTokenFromRequest(request);
-        boolean isAdmin = hasAdminAuthority(token);
 
-        if (isAdmin) {
+        if (hasAdminAuthority(extractTokenFromRequest(request))) {
             Flight flight = flightService.createFlight(flightDto);
+            flightDto = flightMapper.toDto(flight);
             return ResponseEntity.status(HttpStatus.CREATED).body(flightDto);
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

@@ -1,4 +1,4 @@
-package com.example.fbs.fbs.config;
+package com.example.fbs.fbs.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

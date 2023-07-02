@@ -1,6 +1,5 @@
 package com.example.fbs.fbs.service;
 
-
 import com.example.fbs.fbs.model.entity.Booking;
 import com.example.fbs.fbs.model.entity.Flight;
 import com.example.fbs.fbs.model.entity.User;

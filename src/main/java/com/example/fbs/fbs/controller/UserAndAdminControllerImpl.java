@@ -1,7 +1,7 @@
 package com.example.fbs.fbs.controller;
 
-import com.example.fbs.fbs.config.CustomUserDetailsService;
-import com.example.fbs.fbs.config.JwtService;
+import com.example.fbs.fbs.config.security.CustomUserDetailsService;
+import com.example.fbs.fbs.config.security.JwtService;
 import com.example.fbs.fbs.model.dto.UserLoginRequestDto;
 import com.example.fbs.fbs.model.dto.UserRequestDto;
 import com.example.fbs.fbs.model.dto.UserUpdateRequestDto;

@@ -1,7 +1,6 @@
 package com.example.fbs.fbs.controller;
 
-import com.example.fbs.fbs.config.JwtService;
-import com.example.fbs.fbs.mapper.FlightMapper;
+import com.example.fbs.fbs.config.security.JwtService;
 import com.example.fbs.fbs.model.entity.Booking;
 import com.example.fbs.fbs.model.entity.User;
 import com.example.fbs.fbs.repository.UserRepository;
@@ -9,6 +8,7 @@ import com.example.fbs.fbs.service.impl.BookingServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,8 +32,6 @@ public class BookingControllerImpl {
 
     private final JwtService jwtService;
 
-    private final FlightMapper flightMapper;
-
     private final HttpServletRequest request;
 
     private final UserRepository userRepository;
@@ -51,11 +49,11 @@ public class BookingControllerImpl {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-//        UserDetails userDetails = jwtService.extractUserDetails(token);
-//        String email = userDetails.getUsername();
-//        User user = userRepository.findByEmail(email)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
+        return bookFlight(flightId, seatCount, user);
+    }
 
+    @NotNull
+    private ResponseEntity<?> bookFlight(Long flightId, int seatCount, User user) {
         try {
             Booking booking = bookingService.bookFlight(flightId, user, seatCount);
             return ResponseEntity.ok(booking);

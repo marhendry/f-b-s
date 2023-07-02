@@ -18,12 +18,7 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public Flight createFlight(FlightDto flightDto) {
-        Flight flight = new Flight();
-        flight.setDepartureAirport(flightDto.getDepartureAirport());
-        flight.setArrivalAirport(flightDto.getArrivalAirport());
-        flight.setDepartureTime(flightDto.getDepartureTime());
-        flight.setArrivalTime(flightDto.getArrivalTime());
-        flight.setSeats(flightDto.getSeats());
+        Flight flight = Flight.from(flightDto);
         return flightRepository.save(flight);
     }
 
@@ -31,11 +26,7 @@ public class FlightServiceImpl implements FlightService {
     public Flight updateFlight(Long flightId, FlightDto flightDto) {
         Flight flight = flightRepository.findById(flightId)
                 .orElseThrow(() -> new FlightNotFoundException("Flight not found with id: " + flightId));
-        flight.setDepartureAirport(flightDto.getDepartureAirport());
-        flight.setArrivalAirport(flightDto.getArrivalAirport());
-        flight.setDepartureTime(flightDto.getDepartureTime());
-        flight.setArrivalTime(flightDto.getArrivalTime());
-        flight.setSeats(flightDto.getSeats());
+        updateFlightWithNewData(flightDto, flight);
         return flightRepository.save(flight);
     }
 
@@ -53,5 +44,13 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public List<Flight> getAllFlights() {
         return flightRepository.findAll();
+    }
+
+    private static void updateFlightWithNewData(FlightDto flightDto, Flight flight) {
+        flight.setDepartureAirport(flightDto.getDepartureAirport());
+        flight.setArrivalAirport(flightDto.getArrivalAirport());
+        flight.setDepartureTime(flightDto.getDepartureTime());
+        flight.setArrivalTime(flightDto.getArrivalTime());
+        flight.setSeats(flightDto.getSeats());
     }
 }

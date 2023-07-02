@@ -1,6 +1,6 @@
 package com.example.fbs.fbs.service.impl;
 
-import com.example.fbs.fbs.config.JwtService;
+import com.example.fbs.fbs.config.security.JwtService;
 import com.example.fbs.fbs.mapper.UserMapper;
 import com.example.fbs.fbs.model.dto.UserRequestDto;
 import com.example.fbs.fbs.model.dto.UserUpdateRequestDto;
@@ -39,8 +39,7 @@ public class ClientAndAdminServiceImpl implements ClientAndAdminService {
     public void updateUserByEmail(String email, UserUpdateRequestDto updateRequest) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        user.setName(updateRequest.getName());
-        user.setEmail(updateRequest.getEmail());
+        updateUserData(updateRequest, user);
         userRepository.save(user);
     }
 
@@ -50,12 +49,17 @@ public class ClientAndAdminServiceImpl implements ClientAndAdminService {
         User currentUser = userRepository.findByEmail(registrationRequest.getEmail())
                 .orElseGet(() -> buildUser(registrationRequest));
 
-        setEncodedPassword(registrationRequest, currentUser);
+        encodePassword(registrationRequest, currentUser);
         return userRepository.save(currentUser).getUuid();
 
     }
 
-    private void setEncodedPassword(UserRequestDto registrationRequest, User currentUser) {
+    private static void updateUserData(UserUpdateRequestDto updateRequest, User user) {
+        user.setName(updateRequest.getName());
+        user.setEmail(updateRequest.getEmail());
+    }
+
+    private void encodePassword(UserRequestDto registrationRequest, User currentUser) {
         String encodedPassword = passwordEncoder.encode(registrationRequest.getPassword());
         currentUser.setPassword(encodedPassword);
     }
@@ -72,7 +76,7 @@ public class ClientAndAdminServiceImpl implements ClientAndAdminService {
         User currentUser = userRepository.findByEmail(registrationRequest.getEmail())
                 .orElseGet(() -> buildAdmin(registrationRequest));
 
-        setEncodedPassword(registrationRequest, currentUser);
+        encodePassword(registrationRequest, currentUser);
         return userRepository.save(currentUser).getUuid();
     }
 
