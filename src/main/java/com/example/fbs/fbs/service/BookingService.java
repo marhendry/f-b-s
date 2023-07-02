@@ -10,7 +10,7 @@ public interface BookingService {
 
     public Booking bookFlight(Long flightId, User user, int seatCount);
 
-//    public List<Booking> getUserBookings(User user);
-//
-//    public void cancelBooking(Booking booking);
+    public List<Booking> getAllUserBookings(User user);
+
+    public void cancelBooking(Long bookingId);
 }

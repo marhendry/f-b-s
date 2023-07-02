@@ -1,5 +1,6 @@
 package com.example.fbs.fbs.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -24,6 +25,7 @@ public class Booking {
 
     @ManyToOne
     @JoinColumn(name = "user_uuid")
+    @JsonIgnore
     private User user;
 
     @ManyToOne

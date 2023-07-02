@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -47,5 +48,26 @@ public class BookingServiceImpl implements BookingService {
             .setFlight(bookedFlight)
             .setSeatNumber(seatCount)
             .setBookingTime(LocalDateTime.now());
+    }
+
+    @Override
+    public List<Booking> getAllUserBookings(User user) {
+        return bookingRepository.findByUser(user);
+    }
+
+    @Override
+    @Transactional
+    public void cancelBooking(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Booking not found with id: " + bookingId));
+
+        Flight flight = booking.getFlight();
+        int seatCount = booking.getSeatNumber();
+
+        int availableSeats = flight.getSeats();
+        flight.setSeats(availableSeats + seatCount);
+
+        flightRepository.save(flight);
+        bookingRepository.delete(booking);
     }
 }
