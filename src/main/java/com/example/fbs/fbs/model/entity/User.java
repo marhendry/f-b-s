@@ -50,11 +50,13 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.toString()));
     }
+
     public Map<String, Object> toClaims() {
         Map<String, Object> claims = new HashMap<>();
         claims.put("uuid", uuid);
         claims.put("name", name);
         claims.put("email", email);
+        claims.put("role", role.toString());
         return claims;
     }
 

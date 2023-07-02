@@ -83,15 +83,3 @@ public class ClientAndAdminServiceImpl implements ClientAndAdminService {
         return currentUser;
     }
 }
-
-//    @Override
-//    public User registerUser(UserRequestDto registrationRequest) {
-//        User user = User.builder()
-//                .name(registrationRequest.getName())
-//                .email(registrationRequest.getEmail())
-//                .password(registrationRequest.getPassword())
-//                .role(Role.USER.toString())
-//                .build();
-//
-//        return userRepository.save(user);
-//    }

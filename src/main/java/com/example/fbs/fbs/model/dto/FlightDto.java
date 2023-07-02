@@ -1,5 +1,6 @@
 package com.example.fbs.fbs.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,9 +29,11 @@ public class FlightDto {
     private String arrivalAirport;
 
     @JsonProperty("departureTime")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime departureTime;
 
     @JsonProperty("arrivalTime")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime arrivalTime;
 
     @JsonProperty("seats")
