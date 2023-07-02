@@ -56,17 +56,19 @@ public class JwtService {
     public String generateToken(UserDetails userDetails) {
         String username = userDetails.getUsername();
         String role = userDetailsService.loadUserByUsername(username).getAuthorities().stream().findFirst().get().toString();
+        String email = userDetails.getUsername();
 
-        return createToken(username, role);
+        return createToken(username, role, email);
     }
 
-    private String createToken(String username, String role) {
+    private String createToken(String username, String role, String email) {
         final Date now = new Date();
         final Date expiration = new Date(now.getTime() + jwtExpiration * 3600000);
 
         return Jwts.builder()
                 .setSubject(username)
                 .claim("roles", role)
+                .claim("email", email)
                 .setIssuedAt(now)
                 .setExpiration(expiration)
                 .signWith(SignatureAlgorithm.HS256, jwtSecret)
@@ -94,5 +96,10 @@ public class JwtService {
         String role = (String) claims.get("roles");
 
         return User.builder().role(Role.from(role)).build();
+    }
+
+    public String extractEmailFromToken(String token) {
+        Claims claims = extractAllClaims(token);
+        return (String) claims.get("email");
     }
 }

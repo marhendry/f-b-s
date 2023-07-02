@@ -27,4 +27,5 @@ public class Flight {
     private LocalDateTime arrivalTime;
 
     private int seats;
+
 }

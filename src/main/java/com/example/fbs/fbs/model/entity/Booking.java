@@ -1,6 +1,7 @@
 package com.example.fbs.fbs.model.entity;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "bookings")
 @Data
+@Accessors(chain = true)
 public class Booking {
 
     @Id
@@ -21,7 +23,7 @@ public class Booking {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_uuid")
     private User user;
 
     @ManyToOne
@@ -30,6 +32,6 @@ public class Booking {
 
     private LocalDateTime bookingTime;
 
-    private String seatNumber;
+    private int seatNumber;
 
 }

@@ -10,7 +10,6 @@ import com.example.fbs.fbs.repository.UserRepository;
 import com.example.fbs.fbs.service.ClientAndAdminService;
 import com.example.fbs.fbs.utility.impl.PasswordEncoderImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 

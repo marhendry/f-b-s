@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .antMatchers("/actuator/**").permitAll()
                         .antMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/system/**").permitAll()
                         .antMatchers(HttpMethod.POST, "/flights/**").hasAuthority(ADMIN.name())
+                        .antMatchers(HttpMethod.POST, "/bookings/**").hasAuthority(CLIENT.name())
                         .anyRequest()
                         .authenticated())
                 .sessionManagement()
