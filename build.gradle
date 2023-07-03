@@ -62,9 +62,11 @@ dependencies {
 	implementation "io.swagger.core.v3:swagger-models:${swaggerCoreVersion}"
 	implementation "io.swagger.core.v3:swagger-annotations:${swaggerCoreVersion}"
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+	testImplementation group: 'org.springframework.security', name: 'spring-security-test', version: '6.1.1'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 	implementation 'org.jetbrains:annotations:20.1.0'
+	implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.15.2'
 
 	swaggerCodegen "io.swagger.codegen.v3:swagger-codegen-cli:3.0.41"
 

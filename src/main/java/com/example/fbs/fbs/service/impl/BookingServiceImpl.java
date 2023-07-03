@@ -1,5 +1,7 @@
 package com.example.fbs.fbs.service.impl;
 
+import com.example.fbs.fbs.exception.BookingNotFoundException;
+import com.example.fbs.fbs.exception.NotEnoughSeatsException;
 import com.example.fbs.fbs.model.entity.Booking;
 import com.example.fbs.fbs.model.entity.Flight;
 import com.example.fbs.fbs.model.entity.User;
@@ -30,7 +32,7 @@ public class BookingServiceImpl implements BookingService {
 
         int availableSeats = bookedFlight.getSeats();
         if (seatCount > availableSeats) {
-            throw new RuntimeException("Not enough available seats on the flight.");
+            throw new NotEnoughSeatsException("Not enough available seats on the flight.");
         }
 
         Booking booking = createBooking(user, seatCount, bookedFlight);
@@ -59,7 +61,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public void cancelBooking(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException("Booking not found with id: " + bookingId));
+                .orElseThrow(() -> new BookingNotFoundException("Booking not found with id: " + bookingId));
 
         Flight flight = booking.getFlight();
         int seatCount = booking.getSeatNumber();

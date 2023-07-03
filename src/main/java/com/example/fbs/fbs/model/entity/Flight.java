@@ -2,6 +2,7 @@ package com.example.fbs.fbs.model.entity;
 
 import com.example.fbs.fbs.model.dto.FlightDto;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,8 +24,10 @@ public class Flight {
 
     private String arrivalAirport;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime departureTime;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime arrivalTime;
 
     private int seats;

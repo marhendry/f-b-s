@@ -16,7 +16,7 @@ public class SwaggerConfig {
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
                 .group("flight-booking-system.api")
-                .pathsToMatch("/flights/**", "/system/**", "/bookings/**")
+                .pathsToMatch("/flights/**", "/system/**", "/bookings/**", "/search-flights/**")
                 .packagesToScan("com.example.fbs.fbs.controller")
                 .build();
     }
