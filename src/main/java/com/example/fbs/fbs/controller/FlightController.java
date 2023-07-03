@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
 )
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/flights/")
-public class FlightControllerImpl {
+@RequestMapping(value = "/flights")
+public class FlightController {
 
     private final FlightService flightService;
 

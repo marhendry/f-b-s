@@ -28,15 +28,15 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class BookingControllerImplTest {
+class BookingControllerTest {
 
     public static final long FLIGHT_ID = 1L;
 
     public static final int SEAT_COUNT = 2;
 
-    public static final String VALID_TOKEN_STRING = "validToken";
+    public static final String VALID_TOKEN = "validToken";
 
-    public static final String EMAIL_USER_EXAMPLE_COM = "user@example.com";
+    public static final String EMAIL = "user@example.com";
 
     public static final String BEARER = "Bearer ";
 
@@ -61,7 +61,7 @@ class BookingControllerImplTest {
     private UserRepository userRepository;
 
     @InjectMocks
-    private BookingControllerImpl bookingController;
+    private BookingController bookingController;
 
     @BeforeEach
     void setUp() {
@@ -70,28 +70,27 @@ class BookingControllerImplTest {
 
     @Test
     void testBookFlight_WithValidToken_ReturnsOkResponse() {
-        Long flightId = FLIGHT_ID;
-        int seatCount = SEAT_COUNT;
+        // given
         User user = new User();
-        String token = VALID_TOKEN_STRING;
-        String email = EMAIL_USER_EXAMPLE_COM;
         Booking booking = new Booking();
 
-        when(request.getHeader("Authorization")).thenReturn(BEARER + token);
-        when(jwtService.extractEmailFromToken(token)).thenReturn(email);
-        when(userRepository.findByEmail(email)).thenReturn(java.util.Optional.of(user));
+        when(request.getHeader("Authorization")).thenReturn(BEARER + VALID_TOKEN);
+        when(jwtService.extractEmailFromToken(VALID_TOKEN)).thenReturn(EMAIL);
+        when(userRepository.findByEmail(EMAIL)).thenReturn(java.util.Optional.of(user));
 
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getAuthorities()).thenAnswer(invocation -> {
             return Collections.singletonList(new SimpleGrantedAuthority(CLIENT_ROLE));
         });
 
-        when(jwtService.extractUserDetails(token)).thenReturn(userDetails);
+        when(jwtService.extractUserDetails(VALID_TOKEN)).thenReturn(userDetails);
 
-        when(bookingService.bookFlight(flightId, user, seatCount)).thenReturn(booking);
+        when(bookingService.bookFlight(FLIGHT_ID, user, SEAT_COUNT)).thenReturn(booking);
 
-        ResponseEntity<?> response = bookingController.bookFlight(flightId, seatCount);
+        // when
+        ResponseEntity<?> response = bookingController.bookFlight(FLIGHT_ID, SEAT_COUNT);
 
+        // then
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(booking, response.getBody());
     }
@@ -123,8 +122,8 @@ class BookingControllerImplTest {
     void testBookFlight_WithUnknownUser_ReturnsBadRequestResponse() {
         Long flightId = FLIGHT_ID;
         int seatCount = SEAT_COUNT;
-        String token = VALID_TOKEN_STRING;
-        String email = EMAIL_USER_EXAMPLE_COM;
+        String token = VALID_TOKEN;
+        String email = EMAIL;
 
         when(request.getHeader("Authorization")).thenReturn(BEARER + token);
         when(jwtService.extractEmailFromToken(token)).thenReturn(email);
@@ -143,8 +142,8 @@ class BookingControllerImplTest {
 
     @Test
     void testGetAllUserBookings_AuthenticatedClientUser_ReturnsListOfBookings() {
-        String token = VALID_TOKEN_STRING;
-        String email = EMAIL_USER_EXAMPLE_COM;
+        String token = VALID_TOKEN;
+        String email = EMAIL;
 
         when(request.getHeader("Authorization")).thenReturn(BEARER + token);
         when(jwtService.extractEmailFromToken(token)).thenReturn(email);
@@ -187,8 +186,8 @@ class BookingControllerImplTest {
 
     @Test
     void testGetAllUserBookings_AuthenticatedNonClientUser_ReturnsForbiddenResponse() {
-        String token = VALID_TOKEN_STRING;
-        String email = EMAIL_USER_EXAMPLE_COM;
+        String token = VALID_TOKEN;
+        String email = EMAIL;
 
         when(request.getHeader("Authorization")).thenReturn(BEARER + token);
         when(jwtService.extractEmailFromToken(token)).thenReturn(email);
@@ -212,8 +211,8 @@ class BookingControllerImplTest {
     @Test
     void testCancelBooking_AuthenticatedClientUser_ReturnsOkResponse() {
         Long bookingId = FLIGHT_ID;
-        String token = VALID_TOKEN_STRING;
-        String email = EMAIL_USER_EXAMPLE_COM;
+        String token = VALID_TOKEN;
+        String email = EMAIL;
 
         when(request.getHeader("Authorization")).thenReturn(BEARER + token);
         when(jwtService.extractEmailFromToken(token)).thenReturn(email);
@@ -254,8 +253,8 @@ class BookingControllerImplTest {
     @Test
     void testCancelBooking_UnknownBooking_ReturnsNotFoundResponse() {
         Long bookingId = FLIGHT_ID;
-        String token = VALID_TOKEN_STRING;
-        String email = EMAIL_USER_EXAMPLE_COM;
+        String token = VALID_TOKEN;
+        String email = EMAIL;
 
         when(request.getHeader("Authorization")).thenReturn(BEARER + token);
         when(jwtService.extractEmailFromToken(token)).thenReturn(email);

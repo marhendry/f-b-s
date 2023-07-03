@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/system/")
 @RequiredArgsConstructor
-public class UserAndAdminControllerImpl {
+public class UserController {
 
     private final ClientAndAdminServiceImpl userService;
 

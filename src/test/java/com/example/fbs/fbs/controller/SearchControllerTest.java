@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class SearchControllerImplTest {
+class SearchControllerTest {
 
     public static final String AIRPORT_1 = "Airport1";
 
@@ -56,11 +56,11 @@ class SearchControllerImplTest {
     private FlightSearchServiceImpl flightSearchService;
 
 
-    private SearchControllerImpl searchController;
+    private SearchController searchController;
 
     @BeforeEach
     void setup() {
-        searchController = new SearchControllerImpl(flightSearchService);
+        searchController = new SearchController(flightSearchService);
         mockMvc = MockMvcBuilders.standaloneSetup(searchController).build();
     }
 

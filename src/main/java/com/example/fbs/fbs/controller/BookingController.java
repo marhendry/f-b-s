@@ -1,7 +1,6 @@
 package com.example.fbs.fbs.controller;
 
 import com.example.fbs.fbs.config.security.JwtService;
-import com.example.fbs.fbs.model.dto.BookingDto;
 import com.example.fbs.fbs.model.entity.Booking;
 import com.example.fbs.fbs.model.entity.User;
 import com.example.fbs.fbs.repository.UserRepository;
@@ -24,7 +23,6 @@ import org.webjars.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Tag(
         name = "Booking controller",
@@ -33,7 +31,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/bookings/")
-public class BookingControllerImpl {
+public class BookingController {
 
     private final BookingServiceImpl bookingService;
 

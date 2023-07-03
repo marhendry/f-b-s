@@ -32,7 +32,7 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class FlightControllerImplTest {
+class FlightControllerTest {
 
     public static final String ADMIN_TOKEN = "<admin_token>";
 
@@ -84,7 +84,7 @@ class FlightControllerImplTest {
     private JwtService jwtService;
 
     @InjectMocks
-    private FlightControllerImpl flightController;
+    private FlightController flightController;
 
     private MockMvc mockMvc;
 

@@ -29,7 +29,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/search-flights/")
-public class SearchControllerImpl {
+public class SearchController {
 
     private final FlightSearchServiceImpl flightSearchService;
 

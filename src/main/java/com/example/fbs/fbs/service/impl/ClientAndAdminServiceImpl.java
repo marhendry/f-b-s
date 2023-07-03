@@ -65,10 +65,7 @@ public class ClientAndAdminServiceImpl implements ClientAndAdminService {
     }
 
     private User buildUser(UserRequestDto registrationRequest) {
-        User currentUser = userMapper.toUserEntity(registrationRequest);
-        currentUser.setUuid(UUID.randomUUID().toString());
-        currentUser.setRole(Role.CLIENT);
-        return currentUser;
+        return User.from(registrationRequest, UUID.randomUUID().toString(), Role.CLIENT);
     }
 
     @Override
@@ -81,9 +78,6 @@ public class ClientAndAdminServiceImpl implements ClientAndAdminService {
     }
 
     private User buildAdmin(UserRequestDto registrationRequest) {
-        User currentUser = userMapper.toUserEntity(registrationRequest);
-        currentUser.setUuid(UUID.randomUUID().toString());
-        currentUser.setRole(Role.ADMIN);
-        return currentUser;
+        return User.from(registrationRequest, UUID.randomUUID().toString(), Role.ADMIN);
     }
 }
