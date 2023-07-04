@@ -1,6 +1,7 @@
 package com.example.fbs.fbs.controller;
 
 import com.example.fbs.fbs.config.security.JwtService;
+import com.example.fbs.fbs.config.swagger.SwaggerProfileApiResponseStatusConfiguration;
 import com.example.fbs.fbs.mapper.FlightMapper;
 import com.example.fbs.fbs.model.dto.FlightDto;
 import com.example.fbs.fbs.model.entity.Flight;
@@ -28,11 +29,22 @@ import java.util.stream.Collectors;
 
 @Tag(
         name = "Flight controller",
-        description = "Controller to manipulate with flights in the App."
+        description = """
+                Controller to manipulate with flights in the App.
+                This controller allows administrators to create flights or routes based on the provided FlightDto.
+                The operation is only available to logged-in administrators, who need to provide a JWT token
+                generated during the login process. The JWT token should be copied and set in the Authorization header as a Bearer token.
+                                
+                In addition to creating flights, administrators have the following capabilities:
+                                
+                Delete a flight from the database.
+                Retrieve flight information based on its ID.
+                Get a list of all available flights in the database."""
 )
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/flights")
+@SwaggerProfileApiResponseStatusConfiguration
 public class FlightController {
 
     private final FlightService flightService;

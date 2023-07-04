@@ -9,6 +9,7 @@ import com.example.fbs.fbs.repository.BookingRepository;
 import com.example.fbs.fbs.repository.FlightRepository;
 import com.example.fbs.fbs.service.BookingService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
@@ -41,6 +43,7 @@ public class BookingServiceImpl implements BookingService {
         bookingRepository.save(booking);
         flightRepository.save(bookedFlight);
 
+        log.info("Booking created for user: {}", user.getEmail());
         return booking;
     }
 
@@ -71,5 +74,7 @@ public class BookingServiceImpl implements BookingService {
 
         flightRepository.save(flight);
         bookingRepository.delete(booking);
+
+        log.info("Booking cancelled with id: {}", bookingId);
     }
 }

@@ -70,7 +70,6 @@ class BookingControllerTest {
 
     @Test
     void testBookFlight_WithValidToken_ReturnsOkResponse() {
-        // given
         User user = new User();
         Booking booking = new Booking();
 
@@ -87,32 +86,26 @@ class BookingControllerTest {
 
         when(bookingService.bookFlight(FLIGHT_ID, user, SEAT_COUNT)).thenReturn(booking);
 
-        // when
         ResponseEntity<?> response = bookingController.bookFlight(FLIGHT_ID, SEAT_COUNT);
 
-        // then
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(booking, response.getBody());
     }
 
     @Test
     void testBookFlight_WithInvalidToken_ReturnsForbiddenResponse() {
-        Long flightId = FLIGHT_ID;
-        int seatCount = SEAT_COUNT;
-        String token = INVALID_TOKEN_STRING;
-        String email = EMAIL_NON_CLIENT_EXAMPLE_COM;
 
-        when(request.getHeader("Authorization")).thenReturn(BEARER + token);
-        when(jwtService.extractEmailFromToken(token)).thenReturn(email);
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(new User()));
+        when(request.getHeader("Authorization")).thenReturn(BEARER + INVALID_TOKEN_STRING);
+        when(jwtService.extractEmailFromToken(INVALID_TOKEN_STRING)).thenReturn(EMAIL_NON_CLIENT_EXAMPLE_COM);
+        when(userRepository.findByEmail(EMAIL_NON_CLIENT_EXAMPLE_COM)).thenReturn(Optional.of(new User()));
 
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getAuthorities()).thenAnswer(invocation -> {
             return Collections.singletonList(new SimpleGrantedAuthority(NON_CLIENT_ROLE));
         });
-        when(jwtService.extractUserDetails(token)).thenReturn(userDetails);
+        when(jwtService.extractUserDetails(INVALID_TOKEN_STRING)).thenReturn(userDetails);
 
-        ResponseEntity<?> response = bookingController.bookFlight(flightId, seatCount);
+        ResponseEntity<?> response = bookingController.bookFlight(FLIGHT_ID, SEAT_COUNT);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         assertEquals("Access denied", response.getBody());
@@ -120,20 +113,16 @@ class BookingControllerTest {
 
     @Test
     void testBookFlight_WithUnknownUser_ReturnsBadRequestResponse() {
-        Long flightId = FLIGHT_ID;
-        int seatCount = SEAT_COUNT;
-        String token = VALID_TOKEN;
-        String email = EMAIL;
 
-        when(request.getHeader("Authorization")).thenReturn(BEARER + token);
-        when(jwtService.extractEmailFromToken(token)).thenReturn(email);
-        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+        when(request.getHeader("Authorization")).thenReturn(BEARER + VALID_TOKEN);
+        when(jwtService.extractEmailFromToken(VALID_TOKEN)).thenReturn(EMAIL);
+        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
 
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getAuthorities()).thenReturn(Collections.emptyList());
-        when(jwtService.extractUserDetails(token)).thenReturn(userDetails);
+        when(jwtService.extractUserDetails(VALID_TOKEN)).thenReturn(userDetails);
 
-        ResponseEntity<?> response = bookingController.bookFlight(flightId, seatCount);
+        ResponseEntity<?> response = bookingController.bookFlight(FLIGHT_ID, SEAT_COUNT);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         assertEquals("Access denied", response.getBody());
@@ -142,22 +131,20 @@ class BookingControllerTest {
 
     @Test
     void testGetAllUserBookings_AuthenticatedClientUser_ReturnsListOfBookings() {
-        String token = VALID_TOKEN;
-        String email = EMAIL;
 
-        when(request.getHeader("Authorization")).thenReturn(BEARER + token);
-        when(jwtService.extractEmailFromToken(token)).thenReturn(email);
+        when(request.getHeader("Authorization")).thenReturn(BEARER + VALID_TOKEN);
+        when(jwtService.extractEmailFromToken(VALID_TOKEN)).thenReturn(EMAIL);
 
         User user = new User();
-        user.setEmail(email);
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        user.setEmail(EMAIL);
+        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
 
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getAuthorities()).thenAnswer(invocation -> {
             return Collections.singletonList(new SimpleGrantedAuthority(CLIENT_ROLE));
         });
 
-        when(jwtService.extractUserDetails(token)).thenReturn(userDetails);
+        when(jwtService.extractUserDetails(VALID_TOKEN)).thenReturn(userDetails);
 
         List<Booking> bookings = new ArrayList<>();
         bookings.add(new Booking());
@@ -186,21 +173,19 @@ class BookingControllerTest {
 
     @Test
     void testGetAllUserBookings_AuthenticatedNonClientUser_ReturnsForbiddenResponse() {
-        String token = VALID_TOKEN;
-        String email = EMAIL;
 
-        when(request.getHeader("Authorization")).thenReturn(BEARER + token);
-        when(jwtService.extractEmailFromToken(token)).thenReturn(email);
+        when(request.getHeader("Authorization")).thenReturn(BEARER + VALID_TOKEN);
+        when(jwtService.extractEmailFromToken(VALID_TOKEN)).thenReturn(EMAIL);
 
         User user = new User();
-        user.setEmail(email);
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        user.setEmail(EMAIL);
+        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
 
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getAuthorities()).thenAnswer(invocation -> {
             return Collections.singletonList(new SimpleGrantedAuthority(NON_CLIENT_ROLE));
         });
-        when(jwtService.extractUserDetails(token)).thenReturn(userDetails);
+        when(jwtService.extractUserDetails(VALID_TOKEN)).thenReturn(userDetails);
 
         ResponseEntity<List<Booking>> response = bookingController.getAllUserBookings();
 
@@ -210,25 +195,22 @@ class BookingControllerTest {
 
     @Test
     void testCancelBooking_AuthenticatedClientUser_ReturnsOkResponse() {
-        Long bookingId = FLIGHT_ID;
-        String token = VALID_TOKEN;
-        String email = EMAIL;
 
-        when(request.getHeader("Authorization")).thenReturn(BEARER + token);
-        when(jwtService.extractEmailFromToken(token)).thenReturn(email);
+        when(request.getHeader("Authorization")).thenReturn(BEARER + VALID_TOKEN);
+        when(jwtService.extractEmailFromToken(VALID_TOKEN)).thenReturn(EMAIL);
 
         User user = new User();
-        user.setEmail(email);
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        user.setEmail(EMAIL);
+        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
 
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getAuthorities()).thenAnswer(invocation -> {
             return Collections.singletonList(new SimpleGrantedAuthority(CLIENT_ROLE));
         });
 
-        when(jwtService.extractUserDetails(token)).thenReturn(userDetails);
+        when(jwtService.extractUserDetails(VALID_TOKEN)).thenReturn(userDetails);
 
-        ResponseEntity<?> response = bookingController.cancelBooking(bookingId);
+        ResponseEntity<?> response = bookingController.cancelBooking(FLIGHT_ID);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Booking cancelled successfully.", response.getBody());
@@ -236,14 +218,12 @@ class BookingControllerTest {
 
     @Test
     void testCancelBooking_UnauthenticatedUser_ReturnsForbiddenResponse() {
-        Long bookingId = FLIGHT_ID;
-
         when(request.getHeader("Authorization")).thenReturn(null);
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getAuthorities()).thenReturn(Collections.emptyList());
         when(jwtService.extractUserDetails(null)).thenReturn(userDetails);
 
-        ResponseEntity response = bookingController.cancelBooking(bookingId);
+        ResponseEntity response = bookingController.cancelBooking(FLIGHT_ID);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         assertEquals("Access denied", response.getBody());
@@ -252,29 +232,25 @@ class BookingControllerTest {
 
     @Test
     void testCancelBooking_UnknownBooking_ReturnsNotFoundResponse() {
-        Long bookingId = FLIGHT_ID;
-        String token = VALID_TOKEN;
-        String email = EMAIL;
-
-        when(request.getHeader("Authorization")).thenReturn(BEARER + token);
-        when(jwtService.extractEmailFromToken(token)).thenReturn(email);
+        when(request.getHeader("Authorization")).thenReturn(BEARER + VALID_TOKEN);
+        when(jwtService.extractEmailFromToken(VALID_TOKEN)).thenReturn(EMAIL);
 
         User user = new User();
-        user.setEmail(email);
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        user.setEmail(EMAIL);
+        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
 
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getAuthorities()).thenAnswer(invocation -> {
             return Collections.singletonList(new SimpleGrantedAuthority(CLIENT_ROLE));
         });
-        when(jwtService.extractUserDetails(token)).thenReturn(userDetails);
+        when(jwtService.extractUserDetails(VALID_TOKEN)).thenReturn(userDetails);
 
-        doThrow(new NotFoundException("Booking not found with id: " + bookingId))
-                .when(bookingService).cancelBooking(bookingId);
+        doThrow(new NotFoundException("Booking not found with id: " + FLIGHT_ID))
+                .when(bookingService).cancelBooking(FLIGHT_ID);
 
-        ResponseEntity<?> response = bookingController.cancelBooking(bookingId);
+        ResponseEntity<?> response = bookingController.cancelBooking(FLIGHT_ID);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Booking not found with id: " + bookingId, response.getBody());
+        assertEquals("Booking not found with id: " + FLIGHT_ID, response.getBody());
     }
 }

@@ -2,10 +2,11 @@ package com.example.fbs.fbs.controller;
 
 import com.example.fbs.fbs.config.security.CustomUserDetailsService;
 import com.example.fbs.fbs.config.security.JwtService;
+import com.example.fbs.fbs.config.swagger.SwaggerProfileApiResponseStatusConfiguration;
 import com.example.fbs.fbs.model.dto.UserLoginRequestDto;
 import com.example.fbs.fbs.model.dto.UserRequestDto;
 import com.example.fbs.fbs.model.dto.UserUpdateRequestDto;
-import com.example.fbs.fbs.service.impl.ClientAndAdminServiceImpl;
+import com.example.fbs.fbs.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -20,20 +21,32 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(
         name = "User and Admin controller",
-        description = "Controller to manipulate with users in the App."
+        description = """
+                Controller to manipulate with users in the App.
+                This controller allows users to register in the application. There are separate endpoints for
+                registering users with the roles CLIENT and ADMIN.
+                                
+                During registration, each user is assigned a unique UUID number, and their entered password 
+                is encrypted using bcrypt technology. The signup process involves users entering their email 
+                and password, which are validated. If the validation is successful, the password is encrypted 
+                and compared with the stored password in the database. Upon successful validation, the user, 
+                whether a client or an administrator, is assigned a JWT token.
+                                
+                Additionally, users have the ability to update their information, including their name and email."""
 )
 @RestController
 @RequestMapping(value = "/system/")
 @RequiredArgsConstructor
+@SwaggerProfileApiResponseStatusConfiguration
 public class UserController {
 
-    private final ClientAndAdminServiceImpl userService;
+    private final UserServiceImpl userService;
 
     private final JwtService jwtService;
 
     private final CustomUserDetailsService customUserDetailsService;
 
-    @Operation(summary = "create new User in the app")
+    @Operation(summary = "create new Client in the app")
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(UserRequestDto registrationRequest) {
 
@@ -53,12 +66,14 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "Possibility to update user's email and password in the app")
     @PutMapping("/{email}")
     public ResponseEntity<String> updateUserByEmail(@PathVariable String email, UserUpdateRequestDto updateRequest) {
         userService.updateUserByEmail(email, updateRequest);
         return ResponseEntity.ok("User updated successfully");
     }
 
+    @Operation(summary = "create new Administrator in the app")
     @PostMapping("/register-admin")
     public ResponseEntity<String> registerAdmin(@RequestBody UserRequestDto registrationRequest) {
         String userId = userService.saveInitialAdminInfo(registrationRequest);
