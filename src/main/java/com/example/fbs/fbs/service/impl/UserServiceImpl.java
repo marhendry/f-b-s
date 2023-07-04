@@ -1,15 +1,14 @@
 package com.example.fbs.fbs.service.impl;
 
-import com.example.fbs.fbs.config.security.JwtService;
-import com.example.fbs.fbs.mapper.UserMapper;
 import com.example.fbs.fbs.model.dto.UserRequestDto;
 import com.example.fbs.fbs.model.dto.UserUpdateRequestDto;
 import com.example.fbs.fbs.model.entity.Role;
 import com.example.fbs.fbs.model.entity.User;
 import com.example.fbs.fbs.repository.UserRepository;
-import com.example.fbs.fbs.service.ClientAndAdminService;
+import com.example.fbs.fbs.service.UserService;
 import com.example.fbs.fbs.utility.impl.PasswordEncoderImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -17,18 +16,17 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ClientAndAdminServiceImpl implements ClientAndAdminService {
+@Slf4j
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    private final UserMapper userMapper;
-
     private final PasswordEncoderImpl passwordEncoder;
 
-    private final JwtService jwtService;
 
     @Override
     public boolean authenticate(String email, String password) {
+        log.info("Authenticating user with email: {}", email);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         String encodedPassword = user.getPassword();
@@ -37,6 +35,7 @@ public class ClientAndAdminServiceImpl implements ClientAndAdminService {
 
     @Override
     public void updateUserByEmail(String email, UserUpdateRequestDto updateRequest) {
+        log.info("Updating user with email: {}", email);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         updateUserData(updateRequest, user);
@@ -45,9 +44,9 @@ public class ClientAndAdminServiceImpl implements ClientAndAdminService {
 
     @Override
     public String saveInitialUserInfo(UserRequestDto registrationRequest) {
-
+        log.info("Saving initial user info for email: {}", registrationRequest.getEmail());
         User currentUser = userRepository.findByEmail(registrationRequest.getEmail())
-                .orElseGet(() -> buildUser(registrationRequest));
+                .orElseGet(() -> buildClient(registrationRequest));
 
         encodePassword(registrationRequest, currentUser);
         return userRepository.save(currentUser).getUuid();
@@ -64,12 +63,13 @@ public class ClientAndAdminServiceImpl implements ClientAndAdminService {
         currentUser.setPassword(encodedPassword);
     }
 
-    private User buildUser(UserRequestDto registrationRequest) {
+    private User buildClient(UserRequestDto registrationRequest) {
         return User.from(registrationRequest, UUID.randomUUID().toString(), Role.CLIENT);
     }
 
     @Override
     public String saveInitialAdminInfo(UserRequestDto registrationRequest) {
+        log.info("Saving initial admin info for email: {}", registrationRequest.getEmail());
         User currentUser = userRepository.findByEmail(registrationRequest.getEmail())
                 .orElseGet(() -> buildAdmin(registrationRequest));
 

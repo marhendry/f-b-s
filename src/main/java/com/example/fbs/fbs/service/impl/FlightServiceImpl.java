@@ -6,12 +6,14 @@ import com.example.fbs.fbs.model.entity.Flight;
 import com.example.fbs.fbs.repository.FlightRepository;
 import com.example.fbs.fbs.service.FlightService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FlightServiceImpl implements FlightService {
 
     private final FlightRepository flightRepository;
@@ -19,6 +21,7 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public Flight createFlight(FlightDto flightDto) {
         Flight flight = Flight.from(flightDto);
+        log.info("Creating new flight: {}", flight);
         return flightRepository.save(flight);
     }
 
@@ -27,22 +30,26 @@ public class FlightServiceImpl implements FlightService {
         Flight flight = flightRepository.findById(flightId)
                 .orElseThrow(() -> new FlightNotFoundException("Flight not found with id: " + flightId));
         updateFlightWithNewData(flightDto, flight);
+        log.info("Updating flight with id {}: {}", flightId, flight);
         return flightRepository.save(flight);
     }
 
     @Override
     public void deleteFlight(Long flightId) {
+        log.info("Deleting flight with id: {}", flightId);
         flightRepository.deleteById(flightId);
     }
 
     @Override
     public Flight getFlightById(Long flightId) {
+        log.info("Retrieving flight with id: {}", flightId);
         return flightRepository.findById(flightId)
                 .orElseThrow(() -> new FlightNotFoundException("Flight not found with id: " + flightId));
     }
 
     @Override
     public List<Flight> getAllFlights() {
+        log.info("Retrieving all flights");
         return flightRepository.findAll();
     }
 

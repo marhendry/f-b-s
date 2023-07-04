@@ -1,5 +1,6 @@
 package com.example.fbs.fbs.controller;
 
+import com.example.fbs.fbs.config.swagger.SwaggerProfileApiResponseStatusConfiguration;
 import com.example.fbs.fbs.model.entity.Flight;
 import com.example.fbs.fbs.service.impl.FlightSearchServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +30,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/search-flights/")
+@SwaggerProfileApiResponseStatusConfiguration
 public class SearchController {
 
     private final FlightSearchServiceImpl flightSearchService;
