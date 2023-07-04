@@ -105,7 +105,7 @@ class FlightControllerTest {
         when(flightMapper.toDto(flight)).thenReturn(mappedFlightDto);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("/flights/create")
+                        .post("/flights")
                         .header("Authorization", "Bearer <admin_token>")
                         .content("{}")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -127,7 +127,7 @@ class FlightControllerTest {
         when(jwtService.extractUserDetails(null)).thenReturn(userDetails);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("/flights/create")
+                        .post("/flights")
                         .content("{}")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isForbidden());

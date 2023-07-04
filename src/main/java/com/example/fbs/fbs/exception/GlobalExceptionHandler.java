@@ -13,21 +13,15 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = BookingNotFoundException.class)
-    ResponseEntity<String> bookingNotFoundExceptionHandler(BookingNotFoundException e) {
-        log.info("CALLED METHOD - [bookingNotFoundException]");
-        return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
-    }
-
-    @ExceptionHandler(value = FlightNotFoundException.class)
-    ResponseEntity<String> flightNotFoundExceptionHandler(FlightNotFoundException e) {
-        log.info("CALLED METHOD - [flightNotFoundException]");
-        return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
-    }
-
     @ExceptionHandler(value = NotEnoughSeatsException.class)
     ResponseEntity<String> notEnoughSeatsExceptionHandler(NotEnoughSeatsException e) {
         log.info("CALLED METHOD - [notEnoughSeatsException]");
         return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = NotFoundException.class)
+    ResponseEntity<String> notFoundExceptionHandler(NotFoundException e) {
+        log.info("CALLED METHOD - [notFoundException]");
+        return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
     }
 }

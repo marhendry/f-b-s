@@ -3,7 +3,6 @@ package com.example.fbs.fbs.controller;
 import com.example.fbs.fbs.config.security.CustomUserDetailsService;
 import com.example.fbs.fbs.config.security.JwtService;
 import com.example.fbs.fbs.exception.GlobalExceptionHandler;
-import com.example.fbs.fbs.model.dto.UserLoginRequestDto;
 import com.example.fbs.fbs.model.dto.UserRequestDto;
 import com.example.fbs.fbs.model.dto.UserUpdateRequestDto;
 import com.example.fbs.fbs.repository.UserRepository;
@@ -16,24 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 public class UserControllerTest {
@@ -96,13 +87,13 @@ public class UserControllerTest {
     }
 
     @Test
-    void updateUserByEmail() throws Exception {
+    void updateUserByUuid() throws Exception {
         UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto();
         userUpdateRequestDto.setName(UPDATED_NAME);
 
-        doNothing().when(userService).updateUserByEmail(anyString(), any(UserUpdateRequestDto.class));
+        doNothing().when(userService).updateUserByUuid(anyString(), any(UserUpdateRequestDto.class));
 
-        mockMvc.perform(put("/system/test@email.com")
+        mockMvc.perform(put("/system/{uuid}", UUID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userUpdateRequestDto)))
                 .andExpect(status().isOk());

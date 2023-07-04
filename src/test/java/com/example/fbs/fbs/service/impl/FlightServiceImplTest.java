@@ -1,6 +1,6 @@
 package com.example.fbs.fbs.service.impl;
 
-import com.example.fbs.fbs.exception.FlightNotFoundException;
+import com.example.fbs.fbs.exception.NotFoundException;
 import com.example.fbs.fbs.model.dto.FlightDto;
 import com.example.fbs.fbs.model.entity.Flight;
 import com.example.fbs.fbs.repository.FlightRepository;
@@ -88,7 +88,7 @@ class FlightServiceImplTest {
 
         when(flightRepository.findById(flightId)).thenReturn(Optional.empty());
 
-        assertThrows(FlightNotFoundException.class, () -> flightService.updateFlight(flightId, flightDto));
+        assertThrows(NotFoundException.class, () -> flightService.updateFlight(flightId, flightDto));
         verify(flightRepository).findById(flightId);
         verify(flightRepository, never()).save(any(Flight.class));
     }
@@ -121,7 +121,7 @@ class FlightServiceImplTest {
 
         when(flightRepository.findById(flightId)).thenReturn(Optional.empty());
 
-        assertThrows(FlightNotFoundException.class, () -> flightService.getFlightById(flightId));
+        assertThrows(NotFoundException.class, () -> flightService.getFlightById(flightId));
         verify(flightRepository).findById(flightId);
     }
 

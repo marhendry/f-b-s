@@ -9,7 +9,7 @@ public interface UserService {
 
     boolean authenticate(String email, String password);
 
-    void updateUserByEmail(String email, UserUpdateRequestDto updateRequest);
+    void updateUserByUuid(String uuid, UserUpdateRequestDto updateRequest);
 
     String saveInitialAdminInfo(UserRequestDto registrationRequest);
 }

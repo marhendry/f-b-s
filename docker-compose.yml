@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  app:
+    build: ./
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=jdbc:postgresql://db:5432/flight_booking_system
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=1111
+#      - LIQUIBASE_CHANGELOG=classpath:db/changelog/db.changelog-master.yaml
+    command: java -jar cities-service-0.0.1-SNAPSHOT.jar
+  db:
+    container_name: db
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=flight_booking_system
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1111
+    ports:
+      - "5432:5432"

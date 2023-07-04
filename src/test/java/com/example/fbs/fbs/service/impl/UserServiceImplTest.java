@@ -29,7 +29,7 @@ class UserServiceImplTest {
 
     public static final String BCRYPT_PASSWORD = "$2a$10$aYM3Dj2rLNOgP4wQGokTb.y4EwReiWuQn68.SWx3PH0SVTZVEjW1G";
 
-    public static final String NEW_EMAIL_EXAMPLE_COM = "newemail@example.com";
+    public static final String UUID_OF_USER = "dlkfajdsflkajdflkadsj-3243-dsag fdasfads";
 
     public static final String NEW_USER_NAME = "New Name";
 
@@ -77,29 +77,29 @@ class UserServiceImplTest {
     }
 
     @Test
-    void updateUserByEmail_HappyCase() {
-        UserUpdateRequestDto updateRequest = new UserUpdateRequestDto(NEW_USER_NAME, NEW_EMAIL_EXAMPLE_COM);
+    void updateUserByUuid_HappyCase() {
+        UserUpdateRequestDto updateRequest = new UserUpdateRequestDto(NEW_USER_NAME, UUID_OF_USER);
         User user = new User();
 
-        when(userRepository.findByEmail(TEST_EMAIL_EXAMPLE_COM)).thenReturn(Optional.of(user));
+        when(userRepository.findByUuid(UUID_OF_USER)).thenReturn(Optional.of(user));
         when(userRepository.save(user)).thenReturn(user);
 
-        userService.updateUserByEmail(TEST_EMAIL_EXAMPLE_COM, updateRequest);
+        userService.updateUserByUuid(UUID_OF_USER, updateRequest);
 
         assertEquals(updateRequest.getName(), user.getName());
-        assertEquals(updateRequest.getEmail(), user.getEmail());
-        verify(userRepository).findByEmail(TEST_EMAIL_EXAMPLE_COM);
+        assertEquals(updateRequest.getUuid(), user.getEmail());
+        verify(userRepository).findByUuid(UUID_OF_USER);
         verify(userRepository).save(user);
     }
 
     @Test
-    void updateUserByEmail_InvalidEmail_UsernameNotFoundException() {
-        UserUpdateRequestDto updateRequest = new UserUpdateRequestDto(NEW_USER_NAME, NEW_EMAIL_EXAMPLE_COM);
+    void updateUserByUuid_InvalidEmail_UsernameNotFoundException() {
+        UserUpdateRequestDto updateRequest = new UserUpdateRequestDto(NEW_USER_NAME, UUID_OF_USER);
 
         when(userRepository.findByEmail(TEST_EMAIL_EXAMPLE_COM)).thenReturn(Optional.empty());
 
-        assertThrows(UsernameNotFoundException.class, () -> userService.updateUserByEmail(TEST_EMAIL_EXAMPLE_COM, updateRequest));
-        verify(userRepository).findByEmail(TEST_EMAIL_EXAMPLE_COM);
+        assertThrows(UsernameNotFoundException.class, () -> userService.updateUserByUuid(UUID_OF_USER, updateRequest));
+        verify(userRepository).findByUuid(UUID_OF_USER);
         verify(userRepository, never()).save(any(User.class));
     }
 

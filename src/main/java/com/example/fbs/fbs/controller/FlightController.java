@@ -27,6 +27,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.fbs.fbs.controller.AuthUtils.extractTokenFromRequest;
+import static com.example.fbs.fbs.controller.AuthUtils.hasAdminAuthority;
+
 @Tag(
         name = "Flight controller",
         description = """
@@ -54,30 +57,16 @@ public class FlightController {
     private final JwtService jwtService;
 
     @Operation(summary = "create new Flight in the app")
-    @PostMapping("/create")
+    @PostMapping()
     public ResponseEntity<FlightDto> createFlight(@RequestBody FlightDto flightDto) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
-        if (hasAdminAuthority(extractTokenFromRequest(request))) {
+        if (hasAdminAuthority(jwtService, extractTokenFromRequest(request))) {
             Flight flight = flightService.createFlight(flightDto);
             flightDto = flightMapper.toDto(flight);
             return ResponseEntity.status(HttpStatus.CREATED).body(flightDto);
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
-
-    private String extractTokenFromRequest(HttpServletRequest request) {
-        String authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            return authorizationHeader.substring(7);
-        }
-        return null;
-    }
-
-    private boolean hasAdminAuthority(String token) {
-        UserDetails userDetails = jwtService.extractUserDetails(token);
-        return userDetails.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ADMIN"));
     }
 
     @Operation(summary = "update existing Flight in the app")

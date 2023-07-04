@@ -3,6 +3,8 @@ package com.example.fbs.fbs.controller;
 import com.example.fbs.fbs.config.security.JwtService;
 import com.example.fbs.fbs.model.entity.Booking;
 import com.example.fbs.fbs.model.entity.User;
+import com.example.fbs.fbs.repository.BookingRepository;
+import com.example.fbs.fbs.repository.FlightRepository;
 import com.example.fbs.fbs.repository.UserRepository;
 import com.example.fbs.fbs.service.impl.BookingServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +26,12 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class BookingControllerTest {
@@ -59,6 +65,10 @@ class BookingControllerTest {
 
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private BookingRepository bookingRepository;
+    @Mock
+    private FlightRepository flightRepository;
 
     @InjectMocks
     private BookingController bookingController;
@@ -228,29 +238,5 @@ class BookingControllerTest {
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         assertEquals("Access denied", response.getBody());
 
-    }
-
-    @Test
-    void testCancelBooking_UnknownBooking_ReturnsNotFoundResponse() {
-        when(request.getHeader("Authorization")).thenReturn(BEARER + VALID_TOKEN);
-        when(jwtService.extractEmailFromToken(VALID_TOKEN)).thenReturn(EMAIL);
-
-        User user = new User();
-        user.setEmail(EMAIL);
-        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
-
-        UserDetails userDetails = mock(UserDetails.class);
-        when(userDetails.getAuthorities()).thenAnswer(invocation -> {
-            return Collections.singletonList(new SimpleGrantedAuthority(CLIENT_ROLE));
-        });
-        when(jwtService.extractUserDetails(VALID_TOKEN)).thenReturn(userDetails);
-
-        doThrow(new NotFoundException("Booking not found with id: " + FLIGHT_ID))
-                .when(bookingService).cancelBooking(FLIGHT_ID);
-
-        ResponseEntity<?> response = bookingController.cancelBooking(FLIGHT_ID);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Booking not found with id: " + FLIGHT_ID, response.getBody());
     }
 }

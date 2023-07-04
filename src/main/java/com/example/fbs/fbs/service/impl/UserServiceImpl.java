@@ -34,9 +34,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUserByEmail(String email, UserUpdateRequestDto updateRequest) {
-        log.info("Updating user with email: {}", email);
-        User user = userRepository.findByEmail(email)
+    public void updateUserByUuid(String uuid, UserUpdateRequestDto updateRequest) {
+        log.info("Updating user with email: {}", uuid);
+        User user = userRepository.findByUuid(uuid)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         updateUserData(updateRequest, user);
         userRepository.save(user);
@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
 
     private static void updateUserData(UserUpdateRequestDto updateRequest, User user) {
         user.setName(updateRequest.getName());
-        user.setEmail(updateRequest.getEmail());
+        user.setEmail(updateRequest.getUuid());
     }
 
     private void encodePassword(UserRequestDto registrationRequest, User currentUser) {

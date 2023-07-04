@@ -1,6 +1,6 @@
 package com.example.fbs.fbs.service.impl;
 
-import com.example.fbs.fbs.exception.FlightNotFoundException;
+import com.example.fbs.fbs.exception.NotFoundException;
 import com.example.fbs.fbs.model.dto.FlightDto;
 import com.example.fbs.fbs.model.entity.Flight;
 import com.example.fbs.fbs.repository.FlightRepository;
@@ -28,7 +28,7 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public Flight updateFlight(Long flightId, FlightDto flightDto) {
         Flight flight = flightRepository.findById(flightId)
-                .orElseThrow(() -> new FlightNotFoundException("Flight not found with id: " + flightId));
+                .orElseThrow(() -> new NotFoundException("Flight not found with id: " + flightId));
         updateFlightWithNewData(flightDto, flight);
         log.info("Updating flight with id {}: {}", flightId, flight);
         return flightRepository.save(flight);
@@ -44,7 +44,7 @@ public class FlightServiceImpl implements FlightService {
     public Flight getFlightById(Long flightId) {
         log.info("Retrieving flight with id: {}", flightId);
         return flightRepository.findById(flightId)
-                .orElseThrow(() -> new FlightNotFoundException("Flight not found with id: " + flightId));
+                .orElseThrow(() -> new NotFoundException("Flight not found with id: " + flightId));
     }
 
     @Override

@@ -67,9 +67,9 @@ public class UserController {
     }
 
     @Operation(summary = "Possibility to update user's email and password in the app")
-    @PutMapping("/{email}")
-    public ResponseEntity<String> updateUserByEmail(@PathVariable String email, UserUpdateRequestDto updateRequest) {
-        userService.updateUserByEmail(email, updateRequest);
+    @PutMapping("/{uuid}")
+    public ResponseEntity<String> updateUserByUuid(@PathVariable String uuid, UserUpdateRequestDto updateRequest) {
+        userService.updateUserByUuid(uuid, updateRequest);
         return ResponseEntity.ok("User updated successfully");
     }
 

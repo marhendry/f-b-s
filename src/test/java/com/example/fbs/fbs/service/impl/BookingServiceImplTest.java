@@ -1,7 +1,7 @@
 package com.example.fbs.fbs.service.impl;
 
-import com.example.fbs.fbs.exception.BookingNotFoundException;
 import com.example.fbs.fbs.exception.NotEnoughSeatsException;
+import com.example.fbs.fbs.exception.NotFoundException;
 import com.example.fbs.fbs.model.entity.Booking;
 import com.example.fbs.fbs.model.entity.Flight;
 import com.example.fbs.fbs.model.entity.User;
@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.webjars.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,7 +148,7 @@ class BookingServiceImplTest {
 
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.empty());
 
-        assertThrows(BookingNotFoundException.class, () -> bookingService.cancelBooking(bookingId));
+        assertThrows(NotFoundException.class, () -> bookingService.cancelBooking(bookingId));
         verify(bookingRepository).findById(bookingId);
         verify(bookingRepository, never()).delete(any(Booking.class));
         verify(flightRepository, never()).save(any(Flight.class));

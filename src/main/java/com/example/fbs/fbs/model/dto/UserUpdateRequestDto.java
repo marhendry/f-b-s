@@ -17,6 +17,6 @@ public class UserUpdateRequestDto {
     @JsonProperty("name")
     private String name;
 
-    @JsonProperty("email")
-    private String email;
+    @JsonProperty("uuid")
+    private String uuid;
 }

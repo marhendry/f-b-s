@@ -1,7 +1,11 @@
 package com.example.fbs.fbs.model.entity;
 
 import com.example.fbs.fbs.model.dto.FlightDto;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Entity;
@@ -13,7 +17,11 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "flights")
-@Data
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Flight {
 
     @Id

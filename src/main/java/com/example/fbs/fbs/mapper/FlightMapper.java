@@ -8,24 +8,23 @@ import org.springframework.stereotype.Component;
 public class FlightMapper {
 
     public FlightDto toDto(Flight flight) {
-        FlightDto flightDto = new FlightDto();
-        flightDto.setId(flight.getId());
-        flightDto.setDepartureAirport(flight.getDepartureAirport());
-        flightDto.setArrivalAirport(flight.getArrivalAirport());
-        flightDto.setDepartureTime(flight.getDepartureTime());
-        flightDto.setArrivalTime(flight.getArrivalTime());
-        flightDto.setSeats(flight.getSeats());
-        return flightDto;
+        return FlightDto.builder()
+                .id(flight.getId())
+                .departureAirport(flight.getDepartureAirport())
+                .arrivalAirport(flight.getArrivalAirport())
+                .departureTime(flight.getDepartureTime())
+                .arrivalTime(flight.getArrivalTime())
+                .seats(flight.getSeats()).build();
+
     }
 
     public Flight toEntity(FlightDto flightDto) {
-        Flight flight = new Flight();
-        flight.setId(flightDto.getId());
-        flight.setDepartureAirport(flightDto.getDepartureAirport());
-        flight.setArrivalAirport(flightDto.getArrivalAirport());
-        flight.setDepartureTime(flightDto.getDepartureTime());
-        flight.setArrivalTime(flightDto.getArrivalTime());
-        flight.setSeats(flightDto.getSeats());
-        return flight;
+        return Flight.builder()
+                .id(flightDto.getId())
+                .departureAirport(flightDto.getDepartureAirport())
+                .arrivalAirport(flightDto.getArrivalAirport())
+                .departureTime(flightDto.getDepartureTime())
+                .arrivalTime(flightDto.getArrivalTime())
+                .seats(flightDto.getSeats()).build();
     }
 }
