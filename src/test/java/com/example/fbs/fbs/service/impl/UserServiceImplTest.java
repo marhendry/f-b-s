@@ -4,7 +4,7 @@ import com.example.fbs.fbs.model.dto.UserRequestDto;
 import com.example.fbs.fbs.model.dto.UserUpdateRequestDto;
 import com.example.fbs.fbs.model.entity.User;
 import com.example.fbs.fbs.repository.UserRepository;
-import com.example.fbs.fbs.utility.impl.PasswordEncoderImpl;
+import com.example.fbs.fbs.utility.PasswordEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -43,7 +43,7 @@ class UserServiceImplTest {
     private UserRepository userRepository;
 
     @Mock
-    private PasswordEncoderImpl passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {

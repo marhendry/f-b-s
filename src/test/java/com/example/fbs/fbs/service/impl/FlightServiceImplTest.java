@@ -14,7 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -41,6 +43,14 @@ class FlightServiceImplTest {
     public static final int MINUTE_ZERO = 0;
 
     public static final int SEATS_100 = 100;
+
+    public static final int HOURTWELVE = 12;
+
+    public static final LocalDateTime END_DATE_TIME = LocalDateTime.of(YEAR, MONTH, DAY_OF_MONTH, HOURTWELVE, MINUTE_ZERO);
+
+    public static final LocalDateTime START_DATE_TIME = LocalDateTime.of(YEAR, MONTH, DAY_OF_MONTH, HOUR_TEN, MINUTE_ZERO);
+
+    public static final String DEPARTURE_AIRPORTE_A = "A";
 
     private FlightServiceImpl flightService;
 
@@ -145,6 +155,36 @@ class FlightServiceImplTest {
 
         assertEquals(expectedFlights, flights);
         verify(flightRepository).findAll();
+    }
+
+    @Test
+    void searchFlights_HappyCase() {
+
+        List<Flight> expectedFlights = new ArrayList<>();
+        expectedFlights.add(new Flight());
+        expectedFlights.add(new Flight());
+
+        when(flightRepository.findByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(
+                DEPARTURE_AIRPORTE_A, ARRIVAL_AIRPORT_B, START_DATE_TIME, END_DATE_TIME)).thenReturn(expectedFlights);
+
+        List<Flight> flights = flightService.searchFlights(DEPARTURE_AIRPORTE_A, ARRIVAL_AIRPORT_B, START_DATE_TIME, END_DATE_TIME);
+
+        assertEquals(expectedFlights, flights);
+        verify(flightRepository).findByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(
+                DEPARTURE_AIRPORTE_A, ARRIVAL_AIRPORT_B, START_DATE_TIME, END_DATE_TIME);
+    }
+
+    @Test
+    void searchFlights_NotValidSearchParams() {
+
+        when(flightRepository.findByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(
+                DEPARTURE_AIRPORTE_A, ARRIVAL_AIRPORT_B, START_DATE_TIME, END_DATE_TIME)).thenReturn(new ArrayList<>());
+
+        List<Flight> flights = flightService.searchFlights(DEPARTURE_AIRPORTE_A, ARRIVAL_AIRPORT_B, START_DATE_TIME, END_DATE_TIME);
+
+        assertEquals(MINUTE_ZERO, flights.size());
+        verify(flightRepository).findByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(
+                DEPARTURE_AIRPORTE_A, ARRIVAL_AIRPORT_B, START_DATE_TIME, END_DATE_TIME);
     }
 
     private FlightDto createFlightDto() {

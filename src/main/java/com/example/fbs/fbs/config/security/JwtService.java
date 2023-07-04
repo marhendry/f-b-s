@@ -5,6 +5,8 @@ import com.example.fbs.fbs.model.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,13 +16,19 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
 public class JwtService {
+
+    public static final String ROLES = "roles";
+
+    public static final String EMAIL = "email";
 
     private final CustomUserDetailsService userDetailsService;
 
@@ -44,7 +52,16 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+    private Key getSignInKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     private Boolean isTokenExpired(String token) {
@@ -55,7 +72,12 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
         String username = userDetails.getUsername();
-        String role = userDetailsService.loadUserByUsername(username).getAuthorities().stream().findFirst().get().toString();
+        String role = userDetailsService.loadUserByUsername(username)
+                .getAuthorities()
+                .stream()
+                .findFirst()
+                .map(Objects::toString)
+                .orElse(null);
         String email = userDetails.getUsername();
 
         return createToken(username, role, email);
@@ -67,11 +89,11 @@ public class JwtService {
 
         return Jwts.builder()
                 .setSubject(username)
-                .claim("roles", role)
-                .claim("email", email)
+                .claim(ROLES, role)
+                .claim(EMAIL, email)
                 .setIssuedAt(now)
                 .setExpiration(expiration)
-                .signWith(SignatureAlgorithm.HS256, jwtSecret)
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -83,7 +105,7 @@ public class JwtService {
     public Authentication getAuthentication(String token) {
         Claims claims = extractAllClaims(token);
         String username = claims.getSubject();
-        String role = (String) claims.get("roles");
+        String role = (String) claims.get(ROLES);
 
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
@@ -91,15 +113,14 @@ public class JwtService {
     }
 
     public UserDetails extractUserDetails(String token) {
-        String username = extractUsername(token);
         Claims claims = extractAllClaims(token);
-        String role = (String) claims.get("roles");
+        String role = (String) claims.get(ROLES);
 
         return User.builder().role(Role.from(role)).build();
     }
 
     public String extractEmailFromToken(String token) {
         Claims claims = extractAllClaims(token);
-        return (String) claims.get("email");
+        return (String) claims.get(EMAIL);
     }
 }

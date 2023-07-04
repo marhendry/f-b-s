@@ -9,9 +9,9 @@ import com.example.fbs.fbs.service.FlightService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,30 +19,38 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static com.example.fbs.fbs.controller.AuthUtils.extractTokenFromRequest;
-import static com.example.fbs.fbs.controller.AuthUtils.hasAdminAuthority;
+import static com.example.fbs.fbs.utility.AuthUtils.extractTokenFromRequest;
+import static com.example.fbs.fbs.utility.AuthUtils.hasAdminAuthority;
 
 @Tag(
         name = "Flight controller",
         description = """
-                Controller to manipulate with flights in the App.
-                This controller allows administrators to create flights or routes based on the provided FlightDto.
-                The operation is only available to logged-in administrators, who need to provide a JWT token
-                generated during the login process. The JWT token should be copied and set in the Authorization header as a Bearer token.
-                                
-                In addition to creating flights, administrators have the following capabilities:
-                                
-                Delete a flight from the database.
-                Retrieve flight information based on its ID.
-                Get a list of all available flights in the database."""
+        Controller to manipulate with flights in the App.
+        This controller allows administrators to create flights or routes based on the provided FlightDto.
+        The operation is only available to logged-in administrators, who need to provide a JWT token
+        generated during the login process. The JWT token should be copied and set in the Authorization header as a Bearer token.
+                                            
+        In addition to creating flights, administrators have the following capabilities:
+                                            
+        Delete a flight from the database.
+        Retrieve flight information based on its ID.
+        Get a list of all available flights in the database.
+                            
+        Controller also provide to search possible flights based on departure and arrival airports, and date in the App.
+        The startDateTimeString and endDateTimeString parameters should be provided in the format "yyyy-MM-dd HH:mm".
+        This means that the date should be in the format "yyyy-MM-dd" (year-month-day),
+        followed by a space, and then the time in the format "HH:mm" (hours:minutes).
+        For example, a valid input would be "2023-07-01 09:30" to represent July 1, 2023, at 09:30 AM."""
 )
 @RestController
 @RequiredArgsConstructor
@@ -99,7 +107,25 @@ public class FlightController {
         List<Flight> flights = flightService.getAllFlights();
         List<FlightDto> flightDtos = flights.stream()
                 .map(flightMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
         return ResponseEntity.ok(flightDtos);
+    }
+
+    @Operation(summary = "Search flights")
+    @GetMapping("/search-flights/")
+    public ResponseEntity<List<Flight>> searchFlights(
+            @RequestParam("departureAirport") String departureAirport,
+            @RequestParam("arrivalAirport") String arrivalAirport,
+            @RequestParam("startDateTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") String startDateTimeString,
+            @RequestParam("endDateTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") String endDateTimeString) {
+
+        LocalDateTime startDateTime = LocalDateTime.parse(startDateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        LocalDateTime endDateTime = LocalDateTime.parse(endDateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+
+        List<Flight> flights = flightService.searchFlights(departureAirport, arrivalAirport, startDateTime, endDateTime);
+        if (flights.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(flights);
     }
 }

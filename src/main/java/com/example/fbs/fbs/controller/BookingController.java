@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,15 +22,15 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import static com.example.fbs.fbs.controller.AuthUtils.extractTokenFromRequest;
-import static com.example.fbs.fbs.controller.AuthUtils.hasClientAuthority;
+import static com.example.fbs.fbs.utility.AuthUtils.extractTokenFromRequest;
+import static com.example.fbs.fbs.utility.AuthUtils.hasClientAuthority;
 
 @Tag(
         name = "Booking controller",
         description = """
                 Controller to manipulate with bookings in the App.
                                 
-                This controller allows users to book one or multiple seats for a flight by specifying the flight ID 
+                This controller allows users to book one or multiple seats for a flight by specifying the flight ID
                 and the number of seats. This operation is only available to logged-in and verified users 
                 based on a JWT token generated during the user login. The JWT token should be copied 
                 and set in the Authorization header as a Bearer token.
@@ -58,11 +57,12 @@ public class BookingController {
 
     @Operation(summary = "create new Booking in the app")
     @PostMapping()
-    public ResponseEntity<?> bookFlight(@RequestParam("flightId") Long flightId, @RequestParam("seatCount") int seatCount) {
+    public ResponseEntity<Booking> bookFlight(@RequestParam("flightId") Long flightId, @RequestParam("seatCount") int seatCount) {
         String token = extractTokenFromRequest(request);
 
         if (!hasClientAuthority(jwtService, token)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+            Booking booking = new Booking();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(booking);
         }
         String email = jwtService.extractEmailFromToken(token);
         User user = userRepository.findByEmail(email)
@@ -91,7 +91,7 @@ public class BookingController {
 
     @Operation(summary = "Cancel a booking")
     @DeleteMapping("/{bookingId}")
-    public ResponseEntity<?> cancelBooking(@PathVariable Long bookingId) {
+    public ResponseEntity<String> cancelBooking(@PathVariable Long bookingId) {
         String token = extractTokenFromRequest(request);
 
         if (!hasClientAuthority(jwtService, token)) {

@@ -1,13 +1,9 @@
 package com.example.fbs.fbs.controller;
 
-import com.example.fbs.fbs.config.security.CustomUserDetailsService;
-import com.example.fbs.fbs.config.security.JwtService;
 import com.example.fbs.fbs.exception.GlobalExceptionHandler;
 import com.example.fbs.fbs.model.dto.UserRequestDto;
 import com.example.fbs.fbs.model.dto.UserUpdateRequestDto;
-import com.example.fbs.fbs.repository.UserRepository;
 import com.example.fbs.fbs.service.impl.UserServiceImpl;
-import com.example.fbs.fbs.utility.impl.PasswordEncoderImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-public class UserControllerTest {
+class UserControllerTest {
 
     public static final String USER_NAME = "Test Amigo";
 
@@ -49,13 +45,6 @@ public class UserControllerTest {
     @MockBean
     private UserServiceImpl userService;
     @MockBean
-    private CustomUserDetailsService customUserDetailsService;
-    @MockBean
-    private JwtService jwtService;
-    @MockBean
-    private PasswordEncoderImpl passwordEncoder;
-    @MockBean
-    private UserRepository userRepository;
 
     private UserRequestDto userRequestDto;
 

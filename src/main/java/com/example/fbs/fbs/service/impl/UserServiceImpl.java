@@ -6,7 +6,7 @@ import com.example.fbs.fbs.model.entity.Role;
 import com.example.fbs.fbs.model.entity.User;
 import com.example.fbs.fbs.repository.UserRepository;
 import com.example.fbs.fbs.service.UserService;
-import com.example.fbs.fbs.utility.impl.PasswordEncoderImpl;
+import com.example.fbs.fbs.utility.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    private final PasswordEncoderImpl passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -50,7 +50,6 @@ public class UserServiceImpl implements UserService {
 
         encodePassword(registrationRequest, currentUser);
         return userRepository.save(currentUser).getUuid();
-
     }
 
     private static void updateUserData(UserUpdateRequestDto updateRequest, User user) {

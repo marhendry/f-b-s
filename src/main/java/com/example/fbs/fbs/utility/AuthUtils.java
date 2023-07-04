@@ -1,4 +1,4 @@
-package com.example.fbs.fbs.controller;
+package com.example.fbs.fbs.utility;
 
 import com.example.fbs.fbs.config.security.JwtService;
 import lombok.RequiredArgsConstructor;

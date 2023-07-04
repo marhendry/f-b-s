@@ -3,6 +3,7 @@ package com.example.fbs.fbs.model.entity;
 import com.example.fbs.fbs.model.dto.FlightDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Flight {
 
     @Id

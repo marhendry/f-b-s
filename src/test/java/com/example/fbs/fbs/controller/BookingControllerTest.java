@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.webjars.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -29,8 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -233,7 +230,7 @@ class BookingControllerTest {
         when(userDetails.getAuthorities()).thenReturn(Collections.emptyList());
         when(jwtService.extractUserDetails(null)).thenReturn(userDetails);
 
-        ResponseEntity response = bookingController.cancelBooking(FLIGHT_ID);
+        ResponseEntity<String> response = bookingController.cancelBooking(FLIGHT_ID);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         assertEquals("Access denied", response.getBody());

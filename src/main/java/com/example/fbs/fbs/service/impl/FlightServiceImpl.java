@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -51,6 +52,12 @@ public class FlightServiceImpl implements FlightService {
     public List<Flight> getAllFlights() {
         log.info("Retrieving all flights");
         return flightRepository.findAll();
+    }
+
+    @Override
+    public List<Flight> searchFlights(String departureAirport, String arrivalAirport, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return flightRepository.findByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(
+                departureAirport, arrivalAirport, startDateTime, endDateTime);
     }
 
     private static void updateFlightWithNewData(FlightDto flightDto, Flight flight) {
