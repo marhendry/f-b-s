@@ -6,8 +6,7 @@ import com.example.fbs.fbs.model.dto.FlightDto;
 import com.example.fbs.fbs.model.entity.Flight;
 import com.example.fbs.fbs.model.entity.Role;
 import com.example.fbs.fbs.model.entity.User;
-import com.example.fbs.fbs.repository.FlightRepository;
-import com.example.fbs.fbs.service.FlightService;
+import com.example.fbs.fbs.service.impl.FlightServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,11 +29,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class FlightControllerTest {
 
@@ -45,10 +46,6 @@ class FlightControllerTest {
     public static final String PASSWORD = "password";
 
     public static final long FLIGHT_ID_FIRST = 1L;
-
-    public static final String AIRPORT_1 = "Airport1";
-
-    public static final String AIRPORT_2 = "Airport2";
 
     public static final int YEAR = 2023;
 
@@ -72,24 +69,16 @@ class FlightControllerTest {
 
     public static final int DAY_OF_MONTH_2 = 2;
 
-    public static final int DAY_OF_MONTH_1 = 1;
+    public static final LocalDateTime START_DATE_TIME = LocalDateTime.of(2023, 7, 1, 10, 0);
 
-    public static final int HOUR_TEN = 10;
-    public static final int HOUR_NINE = 9;
+    public static final LocalDateTime END_DATE_TIME = LocalDateTime.of(2023, 7, 1, 12, 0);
 
-    public static final int MINUTE_ZERO = 0;
+    private static final LocalDateTime START_DATE_TIME_FOR_SEARCH = LocalDateTime.of(2023, 6, 1, 10, 0);
 
-    public static final int HOUR_TWELVE = 12;
-    public static final int HOUR_THIRTEEN = 12;
+    private static final LocalDateTime END_DATE_TIME_FOR_SEARCH = LocalDateTime.of(2023, 9, 1, 10, 0);
+    public static final String AIRPORT_1 = "Airport1";
 
-    public static final LocalDateTime START_DATE_TIME = LocalDateTime.of(YEAR, MONTH, DAY_OF_MONTH_1, HOUR_TEN, MINUTE_ZERO);
-
-    public static final LocalDateTime END_DATE_TIME = LocalDateTime.of(YEAR, MONTH, DAY_OF_MONTH_1, HOUR_TWELVE, MINUTE_ZERO);
-
-    private static final LocalDateTime START_DATE_TIME_FOR_SEARCH = LocalDateTime.of(YEAR, MONTH, DAY_OF_MONTH_1, HOUR_NINE, MINUTE_ZERO);
-
-    private static final LocalDateTime END_DATE_TIME_FOR_SEARCH = LocalDateTime.of(YEAR, MONTH, DAY_OF_MONTH_1, HOUR_THIRTEEN, MINUTE_ZERO);
-
+    public static final String AIRPORT_2 = "Airport2";
     public static final Flight FLIGHT_1 = Flight.builder()
             .id(FLIGHT_ID_FIRST)
             .departureAirport(AIRPORT_1)
@@ -129,7 +118,7 @@ class FlightControllerTest {
             .build();
 
     @Mock
-    private FlightService flightService;
+    private FlightServiceImpl flightService;
 
     @Mock
     private FlightMapper flightMapper;
@@ -139,9 +128,6 @@ class FlightControllerTest {
 
     @InjectMocks
     private FlightController flightController;
-
-    @Mock
-    private FlightRepository flightRepository;
 
     private MockMvc mockMvc;
 
@@ -166,7 +152,7 @@ class FlightControllerTest {
                         .header("Authorization", "Bearer <admin_token>")
                         .content("{}")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+                .andExpect(status().isCreated());
     }
 
     private User createUserWithAdminAuthority() {
@@ -187,7 +173,7 @@ class FlightControllerTest {
                         .post("/flights")
                         .content("{}")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
+                .andExpect(status().isForbidden());
     }
 
     private UserDetails createUserDetailsWithoutAuthorities() {
@@ -228,13 +214,13 @@ class FlightControllerTest {
                         .put("/flights/{flightId}", flightId)
                         .content(objectMapper.writeValueAsString(flightDto))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(updatedFlightDto.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.departureAirport").value(updatedFlightDto.getDepartureAirport()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.arrivalAirport").value(updatedFlightDto.getArrivalAirport()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.departureTime").value(updatedFlightDto.getDepartureTime().format(formatter)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.arrivalTime").value(updatedFlightDto.getArrivalTime().format(formatter)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.seats").value(updatedFlightDto.getSeats()));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(updatedFlightDto.getId()))
+                .andExpect(jsonPath("$.departureAirport").value(updatedFlightDto.getDepartureAirport()))
+                .andExpect(jsonPath("$.arrivalAirport").value(updatedFlightDto.getArrivalAirport()))
+                .andExpect(jsonPath("$.departureTime").value(updatedFlightDto.getDepartureTime().format(formatter)))
+                .andExpect(jsonPath("$.arrivalTime").value(updatedFlightDto.getArrivalTime().format(formatter)))
+                .andExpect(jsonPath("$.seats").value(updatedFlightDto.getSeats()));
     }
 
     @Test
@@ -243,7 +229,7 @@ class FlightControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/flights/{flightId}", flightId))
-                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andExpect(status().isNoContent())
                 .andExpect(MockMvcResultMatchers.content().string(""));
 
         Mockito.verify(flightService).deleteFlight(flightId);
@@ -259,13 +245,13 @@ class FlightControllerTest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/flights/{flightId}", FLIGHT_1.getId()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(FLIGHT_DTO_1.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.departureAirport").value(FLIGHT_DTO_1.getDepartureAirport()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.arrivalAirport").value(FLIGHT_DTO_1.getArrivalAirport()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.departureTime").value(FLIGHT_DTO_1.getDepartureTime().format(formatter)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.arrivalTime").value(FLIGHT_DTO_1.getArrivalTime().format(formatter)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.seats").value(FLIGHT_DTO_1.getSeats()));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(FLIGHT_DTO_1.getId()))
+                .andExpect(jsonPath("$.departureAirport").value(FLIGHT_DTO_1.getDepartureAirport()))
+                .andExpect(jsonPath("$.arrivalAirport").value(FLIGHT_DTO_1.getArrivalAirport()))
+                .andExpect(jsonPath("$.departureTime").value(FLIGHT_DTO_1.getDepartureTime().format(formatter)))
+                .andExpect(jsonPath("$.arrivalTime").value(FLIGHT_DTO_1.getArrivalTime().format(formatter)))
+                .andExpect(jsonPath("$.seats").value(FLIGHT_DTO_1.getSeats()));
     }
 
     @Test
@@ -280,46 +266,52 @@ class FlightControllerTest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/flights/"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(FLIGHT_DTO_1.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].departureAirport").value(FLIGHT_DTO_1.getDepartureAirport()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].arrivalAirport").value(FLIGHT_DTO_1.getArrivalAirport()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].departureTime").value(FLIGHT_DTO_1.getDepartureTime().format(formatter)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].arrivalTime").value(FLIGHT_DTO_1.getArrivalTime().format(formatter)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].seats").value(FLIGHT_DTO_1.getSeats()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value(FLIGHT_DTO_2.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].departureAirport").value(FLIGHT_DTO_2.getDepartureAirport()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].arrivalAirport").value(FLIGHT_DTO_2.getArrivalAirport()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].departureTime").value(FLIGHT_DTO_2.getDepartureTime().format(formatter)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].arrivalTime").value(FLIGHT_DTO_2.getArrivalTime().format(formatter)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].seats").value(FLIGHT_DTO_2.getSeats()));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(FLIGHT_DTO_1.getId()))
+                .andExpect(jsonPath("$[0].departureAirport").value(FLIGHT_DTO_1.getDepartureAirport()))
+                .andExpect(jsonPath("$[0].arrivalAirport").value(FLIGHT_DTO_1.getArrivalAirport()))
+                .andExpect(jsonPath("$[0].departureTime").value(FLIGHT_DTO_1.getDepartureTime().format(formatter)))
+                .andExpect(jsonPath("$[0].arrivalTime").value(FLIGHT_DTO_1.getArrivalTime().format(formatter)))
+                .andExpect(jsonPath("$[0].seats").value(FLIGHT_DTO_1.getSeats()))
+                .andExpect(jsonPath("$[1].id").value(FLIGHT_DTO_2.getId()))
+                .andExpect(jsonPath("$[1].departureAirport").value(FLIGHT_DTO_2.getDepartureAirport()))
+                .andExpect(jsonPath("$[1].arrivalAirport").value(FLIGHT_DTO_2.getArrivalAirport()))
+                .andExpect(jsonPath("$[1].departureTime").value(FLIGHT_DTO_2.getDepartureTime().format(formatter)))
+                .andExpect(jsonPath("$[1].arrivalTime").value(FLIGHT_DTO_2.getArrivalTime().format(formatter)))
+                .andExpect(jsonPath("$[1].seats").value(FLIGHT_DTO_2.getSeats()));
     }
-
-//    @Test
-//    void testSearchFlights_ReturnsFlights() {
-//        List<Flight> expectedFlights = Arrays.asList(FLIGHT_1, FLIGHT_2);
-//
-//        when(flightRepository.findByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(
-//                AIRPORT_1, AIRPORT_2, START_DATE_TIME, END_DATE_TIME))
-//                .thenReturn(expectedFlights);
-//
-//        List<Flight> actualFlights = flightService.searchFlights(
-//                AIRPORT_1, AIRPORT_2, START_DATE_TIME, END_DATE_TIME);
-//
-//        assertEquals(expectedFlights, actualFlights);
-//    }
 
     @Test
-    void testSearchFlights_ReturnsEmptyList() {
+    void testSearchFlights_ReturnsFlights() throws Exception {
+        List<Flight> expectedFlights = Arrays.asList(FLIGHT_1, FLIGHT_2);
+        when(flightService.searchFlights(
+                anyString(), anyString(), any(LocalDateTime.class), any(LocalDateTime.class)))
+                .thenReturn(expectedFlights);
 
-        when(flightRepository.findByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(
-                AIRPORT_1, AIRPORT_2, START_DATE_TIME, END_DATE_TIME))
-                .thenReturn(Collections.emptyList());
-
-        List<Flight> flights = flightService.searchFlights(
-                AIRPORT_1, AIRPORT_2, START_DATE_TIME, END_DATE_TIME);
-
-        assertTrue(flights.isEmpty());
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/flights/search-flights")
+                        .param("departureAirport", AIRPORT_1)
+                        .param("arrivalAirport", AIRPORT_2)
+                        .param("startDateTime", START_DATE_TIME_FOR_SEARCH.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                        .param("endDateTime", END_DATE_TIME_FOR_SEARCH.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
     }
 
+    @Test
+    void testSearchFlights_ReturnsNoContent() throws Exception {
+        when(flightService.searchFlights(
+                anyString(), anyString(), any(LocalDateTime.class), any(LocalDateTime.class)))
+                .thenReturn(Collections.emptyList());
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/flights/search-flights")
+                        .param("departureAirport", AIRPORT_1)
+                        .param("arrivalAirport", AIRPORT_2)
+                        .param("startDateTime", START_DATE_TIME_FOR_SEARCH.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                        .param("endDateTime", END_DATE_TIME_FOR_SEARCH.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
 }

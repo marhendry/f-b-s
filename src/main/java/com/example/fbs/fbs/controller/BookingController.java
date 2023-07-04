@@ -1,7 +1,6 @@
 package com.example.fbs.fbs.controller;
 
 import com.example.fbs.fbs.config.security.JwtService;
-import com.example.fbs.fbs.config.swagger.SwaggerProfileApiResponseStatusConfiguration;
 import com.example.fbs.fbs.model.entity.Booking;
 import com.example.fbs.fbs.model.entity.User;
 import com.example.fbs.fbs.repository.UserRepository;
@@ -31,8 +30,8 @@ import static com.example.fbs.fbs.utility.AuthUtils.hasClientAuthority;
                 Controller to manipulate with bookings in the App.
                                 
                 This controller allows users to book one or multiple seats for a flight by specifying the flight ID
-                and the number of seats. This operation is only available to logged-in and verified users 
-                based on a JWT token generated during the user login. The JWT token should be copied 
+                and the number of seats. This operation is only available to logged-in and verified users
+                based on a JWT token generated during the user login. The JWT token should be copied
                 and set in the Authorization header as a Bearer token.
                                 
                 Users can also retrieve a list of all their bookings using the generated JWT token.
@@ -43,7 +42,6 @@ import static com.example.fbs.fbs.utility.AuthUtils.hasClientAuthority;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/bookings/")
-@SwaggerProfileApiResponseStatusConfiguration
 public class BookingController {
 
     private final BookingServiceImpl bookingService;

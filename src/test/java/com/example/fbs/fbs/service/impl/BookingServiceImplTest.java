@@ -16,7 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -32,6 +34,8 @@ class BookingServiceImplTest {
     public static final int SEAT_COUNT_TEN = 10;
 
     public static final int SEATS_FIVE = 5;
+
+    public static final int SEAT_NUMBER = 2;
 
     private BookingServiceImpl bookingService;
 
@@ -69,7 +73,7 @@ class BookingServiceImplTest {
         assertEquals(flight, booking.getFlight());
         assertEquals(SEAT_COUNT_THREE, booking.getSeatNumber());
         assertNotNull(booking.getBookingTime());
-        assertEquals(2, flight.getSeats());
+        assertEquals(SEAT_NUMBER, flight.getSeats());
         verify(flightRepository).findById(FLIGHT_ID_ONE);
         verify(bookingRepository).save(any(Booking.class));
         verify(flightRepository).save(flight);
@@ -77,20 +81,18 @@ class BookingServiceImplTest {
 
     @Test
     void bookFlight_NotValidFlightId_NotFoundException() {
-        Long flightId = FLIGHT_ID_ONE;
-        int seatCount = SEAT_COUNT_THREE;
         User user = mock(User.class);
 
-        when(flightRepository.findById(flightId)).thenReturn(Optional.empty());
+        when(flightRepository.findById(FLIGHT_ID_ONE)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> bookingService.bookFlight(flightId, user, seatCount));
-        verify(flightRepository).findById(flightId);
+        assertThrows(NotFoundException.class, () -> bookingService.bookFlight(FLIGHT_ID_ONE, user, SEAT_COUNT_THREE));
+        verify(flightRepository).findById(FLIGHT_ID_ONE);
         verify(bookingRepository, never()).save(any(Booking.class));
         verify(flightRepository, never()).save(any(Flight.class));
     }
 
     @Test
-    void bookFlight_NoSeatsAvailiable_NotEnoughSeatsException() {
+    void bookFlight_NoSeatsAvailable_NotEnoughSeatsException() {
         User user = mock(User.class);
         Flight flight = new Flight();
         flight.setId(FLIGHT_ID_ONE);
@@ -129,7 +131,7 @@ class BookingServiceImplTest {
         flight.setId(FLIGHT_ID_ONE);
         flight.setSeats(SEAT_COUNT_THREE);
         booking.setFlight(flight);
-        booking.setSeatNumber(2);
+        booking.setSeatNumber(SEAT_NUMBER);
 
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         when(flightRepository.save(any(Flight.class))).thenReturn(flight);

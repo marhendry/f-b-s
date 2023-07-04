@@ -1,7 +1,6 @@
 package com.example.fbs.fbs.controller;
 
 import com.example.fbs.fbs.config.security.JwtService;
-import com.example.fbs.fbs.config.swagger.SwaggerProfileApiResponseStatusConfiguration;
 import com.example.fbs.fbs.mapper.FlightMapper;
 import com.example.fbs.fbs.model.dto.FlightDto;
 import com.example.fbs.fbs.model.entity.Flight;
@@ -55,7 +54,6 @@ import static com.example.fbs.fbs.utility.AuthUtils.hasAdminAuthority;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/flights")
-@SwaggerProfileApiResponseStatusConfiguration
 public class FlightController {
 
     private final FlightService flightService;
@@ -112,7 +110,7 @@ public class FlightController {
     }
 
     @Operation(summary = "Search flights")
-    @GetMapping("/search-flights/")
+    @GetMapping("/search-flights")
     public ResponseEntity<List<Flight>> searchFlights(
             @RequestParam("departureAirport") String departureAirport,
             @RequestParam("arrivalAirport") String arrivalAirport,

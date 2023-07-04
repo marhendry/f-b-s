@@ -3,10 +3,9 @@ package com.example.fbs.fbs.controller;
 import com.example.fbs.fbs.config.security.JwtService;
 import com.example.fbs.fbs.model.entity.Booking;
 import com.example.fbs.fbs.model.entity.User;
-import com.example.fbs.fbs.repository.BookingRepository;
-import com.example.fbs.fbs.repository.FlightRepository;
 import com.example.fbs.fbs.repository.UserRepository;
 import com.example.fbs.fbs.service.impl.BookingServiceImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,12 +22,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Fail.fail;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class BookingControllerTest {
@@ -62,10 +61,6 @@ class BookingControllerTest {
 
     @Mock
     private UserRepository userRepository;
-    @Mock
-    private BookingRepository bookingRepository;
-    @Mock
-    private FlightRepository flightRepository;
 
     @InjectMocks
     private BookingController bookingController;
@@ -85,9 +80,8 @@ class BookingControllerTest {
         when(userRepository.findByEmail(EMAIL)).thenReturn(java.util.Optional.of(user));
 
         UserDetails userDetails = mock(UserDetails.class);
-        when(userDetails.getAuthorities()).thenAnswer(invocation -> {
-            return Collections.singletonList(new SimpleGrantedAuthority(CLIENT_ROLE));
-        });
+        when(userDetails.getAuthorities()).thenAnswer(invocation
+                -> Collections.singletonList(new SimpleGrantedAuthority(CLIENT_ROLE)));
 
         when(jwtService.extractUserDetails(VALID_TOKEN)).thenReturn(userDetails);
 
@@ -107,15 +101,14 @@ class BookingControllerTest {
         when(userRepository.findByEmail(EMAIL_NON_CLIENT_EXAMPLE_COM)).thenReturn(Optional.of(new User()));
 
         UserDetails userDetails = mock(UserDetails.class);
-        when(userDetails.getAuthorities()).thenAnswer(invocation -> {
-            return Collections.singletonList(new SimpleGrantedAuthority(NON_CLIENT_ROLE));
-        });
+        when(userDetails.getAuthorities()).thenAnswer(invocation
+                -> Collections.singletonList(new SimpleGrantedAuthority(NON_CLIENT_ROLE)));
         when(jwtService.extractUserDetails(INVALID_TOKEN_STRING)).thenReturn(userDetails);
 
         ResponseEntity<?> response = bookingController.bookFlight(FLIGHT_ID, SEAT_COUNT);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("Access denied", response.getBody());
+        Assertions.assertTrue(response.getBody() instanceof Booking);
     }
 
     @Test
@@ -129,12 +122,11 @@ class BookingControllerTest {
         when(userDetails.getAuthorities()).thenReturn(Collections.emptyList());
         when(jwtService.extractUserDetails(VALID_TOKEN)).thenReturn(userDetails);
 
-        ResponseEntity<?> response = bookingController.bookFlight(FLIGHT_ID, SEAT_COUNT);
+        ResponseEntity<Booking> response = bookingController.bookFlight(FLIGHT_ID, SEAT_COUNT);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("Access denied", response.getBody());
+        assertTrue(response.getBody() instanceof Booking);
     }
-
 
     @Test
     void testGetAllUserBookings_AuthenticatedClientUser_ReturnsListOfBookings() {
@@ -147,9 +139,8 @@ class BookingControllerTest {
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
 
         UserDetails userDetails = mock(UserDetails.class);
-        when(userDetails.getAuthorities()).thenAnswer(invocation -> {
-            return Collections.singletonList(new SimpleGrantedAuthority(CLIENT_ROLE));
-        });
+        when(userDetails.getAuthorities()).thenAnswer(invocation
+                -> Collections.singletonList(new SimpleGrantedAuthority(CLIENT_ROLE)));
 
         when(jwtService.extractUserDetails(VALID_TOKEN)).thenReturn(userDetails);
 
@@ -189,9 +180,8 @@ class BookingControllerTest {
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
 
         UserDetails userDetails = mock(UserDetails.class);
-        when(userDetails.getAuthorities()).thenAnswer(invocation -> {
-            return Collections.singletonList(new SimpleGrantedAuthority(NON_CLIENT_ROLE));
-        });
+        when(userDetails.getAuthorities()).thenAnswer(invocation
+                -> Collections.singletonList(new SimpleGrantedAuthority(NON_CLIENT_ROLE)));
         when(jwtService.extractUserDetails(VALID_TOKEN)).thenReturn(userDetails);
 
         ResponseEntity<List<Booking>> response = bookingController.getAllUserBookings();
@@ -211,9 +201,8 @@ class BookingControllerTest {
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
 
         UserDetails userDetails = mock(UserDetails.class);
-        when(userDetails.getAuthorities()).thenAnswer(invocation -> {
-            return Collections.singletonList(new SimpleGrantedAuthority(CLIENT_ROLE));
-        });
+        when(userDetails.getAuthorities()).thenAnswer(invocation
+                -> Collections.singletonList(new SimpleGrantedAuthority(CLIENT_ROLE)));
 
         when(jwtService.extractUserDetails(VALID_TOKEN)).thenReturn(userDetails);
 

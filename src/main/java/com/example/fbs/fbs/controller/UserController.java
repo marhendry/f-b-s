@@ -2,7 +2,6 @@ package com.example.fbs.fbs.controller;
 
 import com.example.fbs.fbs.config.security.CustomUserDetailsService;
 import com.example.fbs.fbs.config.security.JwtService;
-import com.example.fbs.fbs.config.swagger.SwaggerProfileApiResponseStatusConfiguration;
 import com.example.fbs.fbs.model.dto.UserLoginRequestDto;
 import com.example.fbs.fbs.model.dto.UserRequestDto;
 import com.example.fbs.fbs.model.dto.UserUpdateRequestDto;
@@ -37,7 +36,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/system/")
 @RequiredArgsConstructor
-@SwaggerProfileApiResponseStatusConfiguration
 public class UserController {
 
     private final UserServiceImpl userService;
