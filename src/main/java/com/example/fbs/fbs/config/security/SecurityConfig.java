@@ -27,12 +27,6 @@ public class SecurityConfig {
 
     private final CorsConfigurationSource configurationSource;
 
-    private final AuthenticationEntryPoint authenticationEntryPoint;
-
-    private final AccessDeniedHandler accessDeniedHandler;
-
-
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
