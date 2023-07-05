@@ -4,6 +4,13 @@ It provides functionality for users to register, book flights, and manage their 
 The application is built using Java 17 and utilizes a PostgreSQL database. 
 It can be run locally with configuration settings specified in the application.properties file or deployed using Docker with the command docker-compose up.
 
+## Getting Started
+Set up a PostgreSQL database and configure the connection settings in the application.properties file.
+Run the application locally using the configured settings or use Docker with the command docker-compose up.
+Please refer to the API documentation or code comments for more detailed information on each endpoint and request/response formats.
+
+-> The application will be available at http://localhost:8080/swagger-ui/index.html
+
 ## User and Admin Controller
 The User and Admin Controller provides endpoints for user registration, login, updating user information, and registering administrators. Users can register with the roles CLIENT or ADMIN, and upon registration, a unique UUID is assigned to each user. User passwords are encrypted using bcrypt technology. Login requires a JWT token, which is generated during the login process. Users can update their email and password information.
 
@@ -17,10 +24,3 @@ The Booking Controller enables users to book seats for flights, retrieve their b
 * Java 17
 * PostgreSQL
 * Docker (optional)
-
-## Getting Started
-Set up a PostgreSQL database and configure the connection settings in the application.properties file.
-Run the application locally using the configured settings or use Docker with the command docker-compose up.
-Please refer to the API documentation or code comments for more detailed information on each endpoint and request/response formats.
-
--> The application will be available at http://localhost:8080/swagger-ui/index.html

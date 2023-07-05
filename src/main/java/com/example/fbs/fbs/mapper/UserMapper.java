@@ -1,17 +1,20 @@
 package com.example.fbs.fbs.mapper;
 
 import com.example.fbs.fbs.model.dto.UserRequestDto;
+import com.example.fbs.fbs.model.entity.Role;
 import com.example.fbs.fbs.model.entity.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface UserMapper {
+@Component
+public class UserMapper {
 
-    @Mapping(source = "dto.name", target = "name")
-    @Mapping(source = "dto.email", target = "email")
-    @Mapping(source = "dto.password", target = "password")
-    User toUserEntity(UserRequestDto dto);
-
+    public User toUser(UserRequestDto userRequestDto, String uuid, Role role) {
+        return User.builder()
+                .name(userRequestDto.getName())
+                .email(userRequestDto.getEmail())
+                .password(userRequestDto.getPassword())
+                .uuid(uuid)
+                .role(role)
+                .build();
+    }
 }

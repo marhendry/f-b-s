@@ -1,7 +1,9 @@
 package com.example.fbs.fbs.service.impl;
 
+import com.example.fbs.fbs.mapper.UserMapper;
 import com.example.fbs.fbs.model.dto.UserRequestDto;
 import com.example.fbs.fbs.model.dto.UserUpdateRequestDto;
+import com.example.fbs.fbs.model.entity.Role;
 import com.example.fbs.fbs.model.entity.User;
 import com.example.fbs.fbs.repository.UserRepository;
 import com.example.fbs.fbs.utility.PasswordEncoder;
@@ -19,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,10 +50,13 @@ class UserServiceImplTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private UserMapper userMapper;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        userService = new UserServiceImpl(userRepository, passwordEncoder);
+        userService = new UserServiceImpl(userRepository, passwordEncoder, userMapper);
     }
 
     @Test
@@ -113,13 +119,15 @@ class UserServiceImplTest {
         currentUser.setUuid(uuid);
 
         when(userRepository.findByEmail(registrationRequest.getEmail())).thenReturn(Optional.empty());
+        when(userMapper.toUser(eq(registrationRequest), anyString(), eq(Role.CLIENT))).thenReturn(currentUser);
         when(userRepository.save(any(User.class))).thenReturn(currentUser);
 
         String savedUuid = userService.saveInitialUserInfo(registrationRequest);
 
         assertEquals(uuid, savedUuid);
         verify(userRepository).findByEmail(registrationRequest.getEmail());
-        verify(userRepository).save(any(User.class));
+        verify(passwordEncoder).encode(registrationRequest.getPassword());
+        verify(userRepository).save(currentUser);
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.example.fbs.fbs.service.impl;
 
+import com.example.fbs.fbs.mapper.UserMapper;
 import com.example.fbs.fbs.model.dto.UserRequestDto;
 import com.example.fbs.fbs.model.dto.UserUpdateRequestDto;
 import com.example.fbs.fbs.model.entity.Role;
@@ -22,6 +23,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final UserMapper userMapper;
 
 
     @Override
@@ -63,7 +66,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private User buildClient(UserRequestDto registrationRequest) {
-        return User.from(registrationRequest, UUID.randomUUID().toString(), Role.CLIENT);
+        return userMapper.toUser(registrationRequest, UUID.randomUUID().toString(), Role.CLIENT);
     }
 
     @Override
@@ -77,6 +80,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private User buildAdmin(UserRequestDto registrationRequest) {
-        return User.from(registrationRequest, UUID.randomUUID().toString(), Role.ADMIN);
+        return userMapper.toUser(registrationRequest, UUID.randomUUID().toString(), Role.ADMIN);
     }
 }

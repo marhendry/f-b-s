@@ -1,6 +1,5 @@
 package com.example.fbs.fbs.model.entity;
 
-import com.example.fbs.fbs.model.dto.UserRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -91,13 +90,4 @@ public class User implements UserDetails {
         return true;
     }
 
-    public static User from(UserRequestDto userRequestDto, String uuid, Role role) {
-        return User.builder()
-                .name(userRequestDto.getName())
-                .email(userRequestDto.getEmail())
-                .password(userRequestDto.getPassword())
-                .uuid(uuid)
-                .role(role)
-                .build();
-    }
 }

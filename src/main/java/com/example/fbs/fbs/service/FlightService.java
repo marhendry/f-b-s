@@ -2,6 +2,8 @@ package com.example.fbs.fbs.service;
 
 import com.example.fbs.fbs.model.dto.FlightDto;
 import com.example.fbs.fbs.model.entity.Flight;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,5 +20,7 @@ public interface FlightService {
 
     Flight createFlight(FlightDto flightDto);
 
-    List<Flight> searchFlights(String departureAirport, String arrivalAirport, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    Page<Flight> searchFlights(String departureAirport, String arrivalAirport,
+                               LocalDateTime startDateTime, LocalDateTime endDateTime,
+                               Pageable pageable);
 }

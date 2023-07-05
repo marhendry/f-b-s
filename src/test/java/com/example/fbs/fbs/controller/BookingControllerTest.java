@@ -22,9 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Fail.fail;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
@@ -125,7 +122,7 @@ class BookingControllerTest {
         ResponseEntity<Booking> response = bookingController.bookFlight(FLIGHT_ID, SEAT_COUNT);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertTrue(response.getBody() instanceof Booking);
+        Assertions.assertNotNull(response.getBody());
     }
 
     @Test

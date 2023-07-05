@@ -7,6 +7,8 @@ import com.example.fbs.fbs.repository.FlightRepository;
 import com.example.fbs.fbs.service.FlightService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -55,9 +57,9 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public List<Flight> searchFlights(String departureAirport, String arrivalAirport, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public Page<Flight> searchFlights(String departureAirport, String arrivalAirport, LocalDateTime startDateTime, LocalDateTime endDateTime, Pageable pageable) {
         return flightRepository.findByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(
-                departureAirport, arrivalAirport, startDateTime, endDateTime);
+                departureAirport, arrivalAirport, startDateTime, endDateTime, pageable);
     }
 
     private static void updateFlightWithNewData(FlightDto flightDto, Flight flight) {

@@ -15,6 +15,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
@@ -116,6 +120,10 @@ class FlightControllerTest {
             .arrivalTime(FLIGHT_2.getArrivalTime())
             .seats(FLIGHT_2.getSeats())
             .build();
+
+    public static final String START_DATE = "2023-07-01 10:00";
+
+    public static final String END_DATE = "2023-07-01 12:00";
 
     @Mock
     private FlightServiceImpl flightService;
@@ -235,82 +243,77 @@ class FlightControllerTest {
         Mockito.verify(flightService).deleteFlight(flightId);
     }
 
-
     @Test
-    void testGetFlightById_ReturnsFlightDto() throws Exception {
-
-        when(flightService.getFlightById(FLIGHT_1.getId())).thenReturn(FLIGHT_1);
-        when(flightMapper.toDto(FLIGHT_1)).thenReturn(FLIGHT_DTO_1);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/flights/{flightId}", FLIGHT_1.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(FLIGHT_DTO_1.getId()))
-                .andExpect(jsonPath("$.departureAirport").value(FLIGHT_DTO_1.getDepartureAirport()))
-                .andExpect(jsonPath("$.arrivalAirport").value(FLIGHT_DTO_1.getArrivalAirport()))
-                .andExpect(jsonPath("$.departureTime").value(FLIGHT_DTO_1.getDepartureTime().format(formatter)))
-                .andExpect(jsonPath("$.arrivalTime").value(FLIGHT_DTO_1.getArrivalTime().format(formatter)))
-                .andExpect(jsonPath("$.seats").value(FLIGHT_DTO_1.getSeats()));
-    }
-
-    @Test
-    void testGetAllFlights_ReturnsFlightDtoList() throws Exception {
-
-        List<Flight> flights = Arrays.asList(FLIGHT_1, FLIGHT_2);
-
-        when(flightService.getAllFlights()).thenReturn(flights);
-        when(flightMapper.toDto(FLIGHT_1)).thenReturn(FLIGHT_DTO_1);
-        when(flightMapper.toDto(FLIGHT_2)).thenReturn(FLIGHT_DTO_2);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/flights/"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(FLIGHT_DTO_1.getId()))
-                .andExpect(jsonPath("$[0].departureAirport").value(FLIGHT_DTO_1.getDepartureAirport()))
-                .andExpect(jsonPath("$[0].arrivalAirport").value(FLIGHT_DTO_1.getArrivalAirport()))
-                .andExpect(jsonPath("$[0].departureTime").value(FLIGHT_DTO_1.getDepartureTime().format(formatter)))
-                .andExpect(jsonPath("$[0].arrivalTime").value(FLIGHT_DTO_1.getArrivalTime().format(formatter)))
-                .andExpect(jsonPath("$[0].seats").value(FLIGHT_DTO_1.getSeats()))
-                .andExpect(jsonPath("$[1].id").value(FLIGHT_DTO_2.getId()))
-                .andExpect(jsonPath("$[1].departureAirport").value(FLIGHT_DTO_2.getDepartureAirport()))
-                .andExpect(jsonPath("$[1].arrivalAirport").value(FLIGHT_DTO_2.getArrivalAirport()))
-                .andExpect(jsonPath("$[1].departureTime").value(FLIGHT_DTO_2.getDepartureTime().format(formatter)))
-                .andExpect(jsonPath("$[1].arrivalTime").value(FLIGHT_DTO_2.getArrivalTime().format(formatter)))
-                .andExpect(jsonPath("$[1].seats").value(FLIGHT_DTO_2.getSeats()));
-    }
-
-    @Test
-    void testSearchFlights_ReturnsFlights() throws Exception {
-        List<Flight> expectedFlights = Arrays.asList(FLIGHT_1, FLIGHT_2);
+    void testGetFlights_ReturnsFlights() throws Exception {
+        Page<Flight> expectedFlightPage = new PageImpl<>(Arrays.asList(FLIGHT_1, FLIGHT_2));
         when(flightService.searchFlights(
-                anyString(), anyString(), any(LocalDateTime.class), any(LocalDateTime.class)))
-                .thenReturn(expectedFlights);
+                anyString(), anyString(), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
+                .thenReturn(expectedFlightPage);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/flights/search-flights")
+                        .get("/flights/search")
                         .param("departureAirport", AIRPORT_1)
                         .param("arrivalAirport", AIRPORT_2)
                         .param("startDateTime", START_DATE_TIME_FOR_SEARCH.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                         .param("endDateTime", END_DATE_TIME_FOR_SEARCH.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$.content", hasSize(2)));
     }
 
     @Test
-    void testSearchFlights_ReturnsNoContent() throws Exception {
+    void testGetFlights_ReturnsNoContent() throws Exception {
+        Page<Flight> emptyFlightPage = new PageImpl<>(Collections.emptyList());
         when(flightService.searchFlights(
-                anyString(), anyString(), any(LocalDateTime.class), any(LocalDateTime.class)))
-                .thenReturn(Collections.emptyList());
+                anyString(), anyString(), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
+                .thenReturn(emptyFlightPage);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/flights/search-flights")
+                        .get("/flights/search")
                         .param("departureAirport", AIRPORT_1)
                         .param("arrivalAirport", AIRPORT_2)
                         .param("startDateTime", START_DATE_TIME_FOR_SEARCH.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                         .param("endDateTime", END_DATE_TIME_FOR_SEARCH.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void testGetFlights_ReturnsFlightPage() throws Exception {
+        List<Flight> flights = Arrays.asList(new Flight(), new Flight(), new Flight());
+        Page<Flight> flightPage = new PageImpl<>(flights, PageRequest.of(0, 3), 3);
+
+        when(flightService.searchFlights(anyString(), anyString(), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
+                .thenReturn(flightPage);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/flights/search")
+                        .param("departureAirport", AIRPORT_1)
+                        .param("arrivalAirport", AIRPORT_2)
+                        .param("startDateTime", START_DATE)
+                        .param("endDateTime", END_DATE)
+                        .param("page", "0")
+                        .param("size", "3")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(3)));
+    }
+
+    @Test
+    void testGetFlights_ReturnsNoContentForEmptyPage() throws Exception {
+        Page<Flight> emptyFlightPage = new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 10), 0);
+
+        when(flightService.searchFlights(anyString(), anyString(), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
+                .thenReturn(emptyFlightPage);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/flights/search")
+                        .param("departureAirport", AIRPORT_1)
+                        .param("arrivalAirport", AIRPORT_2)
+                        .param("startDateTime", START_DATE)
+                        .param("endDateTime", END_DATE)
+                        .param("page", "0")
+                        .param("size", "10")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }

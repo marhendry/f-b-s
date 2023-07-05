@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/system/")
 @RequiredArgsConstructor
-public class UserController {
+public class SystemController {
 
     private final UserServiceImpl userService;
 
@@ -45,7 +45,7 @@ public class UserController {
     private final CustomUserDetailsService customUserDetailsService;
 
     @Operation(summary = "create new Client in the app")
-    @PostMapping("/register")
+    @PostMapping("/register-client")
     public ResponseEntity<String> registerUser(UserRequestDto registrationRequest) {
 
         return ResponseEntity.ok(userService.saveInitialUserInfo(registrationRequest));

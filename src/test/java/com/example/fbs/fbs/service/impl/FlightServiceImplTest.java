@@ -8,9 +8,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -154,33 +160,42 @@ class FlightServiceImplTest {
     }
 
     @Test
-    void searchFlights_HappyCase() {
+    void testSearchFlights_ReturnsFlightPage() {
+        String departureAirport = "Airport1";
+        String arrivalAirport = "Airport2";
+        LocalDateTime startDateTime = LocalDateTime.of(2023, 7, 1, 10, 0);
+        LocalDateTime endDateTime = LocalDateTime.of(2023, 7, 1, 12, 0);
+        Pageable pageable = PageRequest.of(0, 10);
 
-        List<Flight> expectedFlights = new ArrayList<>();
-        expectedFlights.add(new Flight());
-        expectedFlights.add(new Flight());
+        List<Flight> expectedFlights = Arrays.asList(new Flight(), new Flight(), new Flight());
+        Page<Flight> expectedFlightPage = new PageImpl<>(expectedFlights, pageable, 3);
 
-        when(flightRepository.findByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(
-                DEPARTURE_AIRPORT_A, ARRIVAL_AIRPORT_B, START_DATE_TIME, END_DATE_TIME)).thenReturn(expectedFlights);
+        when(flightRepository.findByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(departureAirport, arrivalAirport, startDateTime, endDateTime, pageable))
+                .thenReturn(expectedFlightPage);
 
-        List<Flight> flights = flightService.searchFlights(DEPARTURE_AIRPORT_A, ARRIVAL_AIRPORT_B, START_DATE_TIME, END_DATE_TIME);
+        Page<Flight> flightPage = flightService.searchFlights(departureAirport, arrivalAirport, startDateTime, endDateTime, pageable);
 
-        assertEquals(expectedFlights, flights);
-        verify(flightRepository).findByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(
-                DEPARTURE_AIRPORT_A, ARRIVAL_AIRPORT_B, START_DATE_TIME, END_DATE_TIME);
+        assertEquals(expectedFlightPage, flightPage);
+        assertEquals(expectedFlights, flightPage.getContent());
     }
 
     @Test
-    void searchFlights_NotValidSearchParams() {
+    void testSearchFlights_ReturnsEmptyPage() {
+        String departureAirport = "Airport1";
+        String arrivalAirport = "Airport2";
+        LocalDateTime startDateTime = START_DATE_TIME;
+        LocalDateTime endDateTime = END_DATE_TIME;
+        Pageable pageable = PageRequest.of(0, 10);
 
-        when(flightRepository.findByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(
-                DEPARTURE_AIRPORT_A, ARRIVAL_AIRPORT_B, START_DATE_TIME, END_DATE_TIME)).thenReturn(new ArrayList<>());
+        Page<Flight> emptyFlightPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
 
-        List<Flight> flights = flightService.searchFlights(DEPARTURE_AIRPORT_A, ARRIVAL_AIRPORT_B, START_DATE_TIME, END_DATE_TIME);
+        when(flightRepository.findByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(departureAirport, arrivalAirport, startDateTime, endDateTime, pageable))
+                .thenReturn(emptyFlightPage);
 
-        assertEquals(MINUTE_ZERO, flights.size());
-        verify(flightRepository).findByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(
-                DEPARTURE_AIRPORT_A, ARRIVAL_AIRPORT_B, START_DATE_TIME, END_DATE_TIME);
+        Page<Flight> flightPage = flightService.searchFlights(departureAirport, arrivalAirport, startDateTime, endDateTime, pageable);
+
+        assertTrue(flightPage.isEmpty());
+        assertEquals(0, flightPage.getTotalElements());
     }
 
     private FlightDto createFlightDto() {

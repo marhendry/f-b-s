@@ -8,6 +8,10 @@ import com.example.fbs.fbs.service.FlightService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,22 +38,22 @@ import static com.example.fbs.fbs.utility.AuthUtils.hasAdminAuthority;
 @Tag(
         name = "Flight controller",
         description = """
-        Controller to manipulate with flights in the App.
-        This controller allows administrators to create flights or routes based on the provided FlightDto.
-        The operation is only available to logged-in administrators, who need to provide a JWT token
-        generated during the login process. The JWT token should be copied and set in the Authorization header as a Bearer token.
-                                            
-        In addition to creating flights, administrators have the following capabilities:
-                                            
-        Delete a flight from the database.
-        Retrieve flight information based on its ID.
-        Get a list of all available flights in the database.
-                            
-        Controller also provide to search possible flights based on departure and arrival airports, and date in the App.
-        The startDateTimeString and endDateTimeString parameters should be provided in the format "yyyy-MM-dd HH:mm".
-        This means that the date should be in the format "yyyy-MM-dd" (year-month-day),
-        followed by a space, and then the time in the format "HH:mm" (hours:minutes).
-        For example, a valid input would be "2023-07-01 09:30" to represent July 1, 2023, at 09:30 AM."""
+                Controller to manipulate with flights in the App.
+                This controller allows administrators to create flights or routes based on the provided FlightDto.
+                The operation is only available to logged-in administrators, who need to provide a JWT token
+                generated during the login process. The JWT token should be copied and set in the Authorization header as a Bearer token.
+                                                    
+                In addition to creating flights, administrators have the following capabilities:
+                                                    
+                Delete a flight from the database.
+                Retrieve flight information based on its ID.
+                Get a list of all available flights in the database.
+                                    
+                Controller also provide to search possible flights based on departure and arrival airports, and date in the App.
+                The startDateTimeString and endDateTimeString parameters should be provided in the format "yyyy-MM-dd HH:mm".
+                This means that the date should be in the format "yyyy-MM-dd" (year-month-day),
+                followed by a space, and then the time in the format "HH:mm" (hours:minutes).
+                For example, a valid input would be "2023-07-01 09:30" to represent July 1, 2023, at 09:30 AM."""
 )
 @RestController
 @RequiredArgsConstructor
@@ -91,39 +95,40 @@ public class FlightController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "get existing Flight in the app by Id")
-    @GetMapping("/{flightId}")
-    public ResponseEntity<FlightDto> getFlightById(@PathVariable Long flightId) {
-        Flight flight = flightService.getFlightById(flightId);
-        FlightDto flightDto = flightMapper.toDto(flight);
-        return ResponseEntity.ok(flightDto);
-    }
+    @Operation(summary = "Get Flights")
+    @GetMapping("/search")
+    public ResponseEntity<Page<FlightDto>> getFlights(
+            @RequestParam(value = "id", required = false) Long id,
+            @RequestParam(value = "departureAirport", required = false) String departureAirport,
+            @RequestParam(value = "arrivalAirport", required = false) String arrivalAirport,
+            @RequestParam(value = "startDateTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") String startDateTimeString,
+            @RequestParam(value = "endDateTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") String endDateTimeString,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
 
-    @Operation(summary = "get all Flights in the app")
-    @GetMapping
-    public ResponseEntity<List<FlightDto>> getAllFlights() {
-        List<Flight> flights = flightService.getAllFlights();
-        List<FlightDto> flightDtos = flights.stream()
-                .map(flightMapper::toDto)
-                .toList();
-        return ResponseEntity.ok(flightDtos);
-    }
+        if (id != null) {
+            Flight flight = flightService.getFlightById(id);
+            if (flight == null) {
+                return ResponseEntity.noContent().build();
+            }
+            FlightDto flightDto = flightMapper.toDto(flight);
+            return ResponseEntity.ok(new PageImpl<>(List.of(flightDto)));
+        } else {
+            LocalDateTime startDateTime = startDateTimeString != null ? LocalDateTime.parse(startDateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) : null;
+            LocalDateTime endDateTime = endDateTimeString != null ? LocalDateTime.parse(endDateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) : null;
 
-    @Operation(summary = "Search flights")
-    @GetMapping("/search-flights")
-    public ResponseEntity<List<Flight>> searchFlights(
-            @RequestParam("departureAirport") String departureAirport,
-            @RequestParam("arrivalAirport") String arrivalAirport,
-            @RequestParam("startDateTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") String startDateTimeString,
-            @RequestParam("endDateTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") String endDateTimeString) {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Flight> flightPage = flightService.searchFlights(departureAirport, arrivalAirport, startDateTime, endDateTime, pageable);
 
-        LocalDateTime startDateTime = LocalDateTime.parse(startDateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        LocalDateTime endDateTime = LocalDateTime.parse(endDateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+            if (flightPage.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
 
-        List<Flight> flights = flightService.searchFlights(departureAirport, arrivalAirport, startDateTime, endDateTime);
-        if (flights.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            List<FlightDto> flightDtos = flightPage.getContent().stream()
+                    .map(flightMapper::toDto)
+                    .toList();
+
+            return ResponseEntity.ok(new PageImpl<>(flightDtos, pageable, flightPage.getTotalElements()));
         }
-        return ResponseEntity.ok(flights);
     }
 }

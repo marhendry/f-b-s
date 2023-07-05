@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-class UserControllerTest {
+class SystemControllerTest {
 
     public static final String USER_NAME = "Test Amigo";
 
@@ -36,7 +36,7 @@ class UserControllerTest {
     public static final String UPDATED_NAME = "Updated name";
 
     @Autowired
-    private UserController userController;
+    private SystemController systemController;
     private MockMvc mockMvc;
 
     @Autowired
@@ -60,7 +60,7 @@ class UserControllerTest {
     @BeforeEach
     void setUpEach() {
         mockMvc = MockMvcBuilders
-                .standaloneSetup(userController)
+                .standaloneSetup(systemController)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
     }
@@ -69,7 +69,7 @@ class UserControllerTest {
     void registerUser() throws Exception {
         when(userService.saveInitialUserInfo(any(UserRequestDto.class))).thenReturn(UUID);
 
-        mockMvc.perform(post("/system/register")
+        mockMvc.perform(post("/system/register-client")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userRequestDto)))
                 .andExpect(status().isOk());
