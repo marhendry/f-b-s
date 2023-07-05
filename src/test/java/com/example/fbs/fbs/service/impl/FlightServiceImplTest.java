@@ -1,6 +1,7 @@
 package com.example.fbs.fbs.service.impl;
 
 import com.example.fbs.fbs.exception.NotFoundException;
+import com.example.fbs.fbs.mapper.FlightMapper;
 import com.example.fbs.fbs.model.dto.FlightDto;
 import com.example.fbs.fbs.model.entity.Flight;
 import com.example.fbs.fbs.repository.FlightRepository;
@@ -58,11 +59,13 @@ class FlightServiceImplTest {
 
     @Mock
     private FlightRepository flightRepository;
+    @Mock
+    private FlightMapper flightMapper;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        flightService = new FlightServiceImpl(flightRepository);
+        flightService = new FlightServiceImpl(flightRepository, flightMapper);
     }
 
     @Test
@@ -70,6 +73,7 @@ class FlightServiceImplTest {
         FlightDto flightDto = createFlightDto();
         Flight expectedFlight = createFlightFromDto(flightDto);
 
+        when(flightMapper.toEntity(any(FlightDto.class))).thenReturn(expectedFlight);
         when(flightRepository.save(any(Flight.class))).thenReturn(expectedFlight);
 
         Flight createdFlight = flightService.createFlight(flightDto);

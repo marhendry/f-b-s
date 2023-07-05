@@ -1,6 +1,7 @@
 package com.example.fbs.fbs.service.impl;
 
 import com.example.fbs.fbs.exception.NotFoundException;
+import com.example.fbs.fbs.mapper.FlightMapper;
 import com.example.fbs.fbs.model.dto.FlightDto;
 import com.example.fbs.fbs.model.entity.Flight;
 import com.example.fbs.fbs.repository.FlightRepository;
@@ -20,10 +21,11 @@ import java.util.List;
 public class FlightServiceImpl implements FlightService {
 
     private final FlightRepository flightRepository;
+    private final FlightMapper flightMapper;
 
     @Override
     public Flight createFlight(FlightDto flightDto) {
-        Flight flight = Flight.from(flightDto);
+        Flight flight = flightMapper.toEntity(flightDto);
         log.info("Creating new flight: {}", flight);
         return flightRepository.save(flight);
     }

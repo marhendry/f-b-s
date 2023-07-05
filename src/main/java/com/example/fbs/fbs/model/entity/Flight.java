@@ -44,13 +44,4 @@ public class Flight {
 
     private int seats;
 
-    public static Flight from(FlightDto flightDto) {
-        final Flight flight = new Flight();
-        flight.setDepartureAirport(flightDto.getDepartureAirport());
-        flight.setArrivalAirport(flightDto.getArrivalAirport());
-        flight.setDepartureTime(flightDto.getDepartureTime());
-        flight.setArrivalTime(flightDto.getArrivalTime());
-        flight.setSeats(flightDto.getSeats());
-        return flight;
-    }
 }
