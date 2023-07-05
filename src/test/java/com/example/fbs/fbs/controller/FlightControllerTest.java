@@ -195,12 +195,6 @@ class FlightControllerTest {
     @Test
     void testUpdateFlight_ReturnsUpdatedFlightDto() throws Exception {
         Long flightId = FLIGHT_ID_FIRST;
-        FlightDto flightDto = new FlightDto();
-        flightDto.setDepartureAirport(AIRPORT_1);
-        flightDto.setArrivalAirport(AIRPORT_2);
-        flightDto.setDepartureTime(LocalDateTime.of(YEAR, MONTH, DAY_OF_MONTH, HOUR, MINUTE));
-        flightDto.setArrivalTime(LocalDateTime.of(YEAR, MONTH, DAY_OF_MONTH, HOUR_2, MINUTE));
-        flightDto.setSeats(SEATS_OF_FLIGHT);
 
         Flight updatedFlight = new Flight();
         FlightDto updatedFlightDto = new FlightDto();
@@ -211,7 +205,7 @@ class FlightControllerTest {
         updatedFlightDto.setArrivalTime(LocalDateTime.of(YEAR, MONTH, DAY_OF_MONTH_2, HOUR_2, MINUTE));
         updatedFlightDto.setSeats(SEATS_OF_UPDATED_FLIGHT);
 
-        when(flightService.updateFlight(flightId, flightDto)).thenReturn(updatedFlight);
+        when(flightService.updateFlight(flightId, FLIGHT_DTO_2)).thenReturn(updatedFlight);
         when(flightMapper.toDto(updatedFlight)).thenReturn(updatedFlightDto);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -220,7 +214,7 @@ class FlightControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders
                         .put("/flights/{flightId}", flightId)
-                        .content(objectMapper.writeValueAsString(flightDto))
+                        .content(objectMapper.writeValueAsString(FLIGHT_DTO_2))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(updatedFlightDto.getId()))
