@@ -46,14 +46,18 @@ import static com.example.fbs.fbs.utility.AuthUtils.hasAdminAuthority;
                 In addition to creating flights, administrators have the following capabilities:
                                                     
                 Delete a flight from the database.
-                Retrieve flight information based on its ID.
                 Get a list of all available flights in the database.
                                     
-                Controller also provide to search possible flights based on departure and arrival airports, and date in the App.
-                The startDateTimeString and endDateTimeString parameters should be provided in the format "yyyy-MM-dd HH:mm".
-                This means that the date should be in the format "yyyy-MM-dd" (year-month-day),
-                followed by a space, and then the time in the format "HH:mm" (hours:minutes).
-                For example, a valid input would be "2023-07-01 09:30" to represent July 1, 2023, at 09:30 AM."""
+                The controller provides endpoints for searching and retrieving flights based on departure and arrival
+                airports, as well as date in the application. The startDateTimeString and endDateTimeString parameters
+                should be provided in the format "yyyy-MM-dd HH:mm". This format consists of the date in "yyyy-MM-dd"
+                format (year-month-day), followed by a space, and then the time in "HH:mm" format (hours:minutes).
+                For example, a valid input would be "2023-07-01 09:30" to represent July 1, 2023, at 09:30 AM.
+                These search endpoints are accessible for both CLIENT and ADMIN roles. They allow searching for flights
+                either by providing a flight ID or by specifying the departure and arrival airportsalong with thedate range.
+                Pagination is also supported, allowing you to specify the page number and the page size for the output.
+                Please note that the specific endpoint URLs and additional request parameters may vary depending
+                on your application's configuration."""
 )
 @RestController
 @RequiredArgsConstructor

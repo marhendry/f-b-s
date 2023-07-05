@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(
-        name = "User and Admin controller",
+        name = "System controller",
         description = """
                 Controller to manipulate with users in the App.
                 This controller allows users to register in the application. There are separate endpoints for
