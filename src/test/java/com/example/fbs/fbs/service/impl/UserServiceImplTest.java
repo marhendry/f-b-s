@@ -95,7 +95,7 @@ class UserServiceImplTest {
         userService.updateUserByUuid(UUID_OF_USER, updateRequest);
 
         assertEquals(updateRequest.getName(), user.getName());
-        assertEquals(updateRequest.getUuid(), user.getEmail());
+        assertEquals(updateRequest.getEmail(), user.getEmail());
         verify(userRepository).findByUuid(UUID_OF_USER);
         verify(userRepository).save(user);
     }

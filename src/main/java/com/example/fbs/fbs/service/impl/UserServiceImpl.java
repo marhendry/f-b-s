@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
 
     private static void updateUserData(UserUpdateRequestDto updateRequest, User user) {
         user.setName(updateRequest.getName());
-        user.setEmail(updateRequest.getUuid());
+        user.setEmail(updateRequest.getEmail());
     }
 
     private void encodePassword(UserRequestDto registrationRequest, User currentUser) {

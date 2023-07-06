@@ -10,13 +10,13 @@ import java.util.List;
 
 public interface FlightService {
 
-    List<Flight> getAllFlights();
+    Page<Flight> getAllFlights(Pageable pageable);
 
     Flight getFlightById(Long flightId);
 
     void deleteFlight(Long flightId);
 
-    Flight updateFlight(Long flightId, FlightDto flightDto);
+    Flight updateFlight(FlightDto flightDto);
 
     Flight createFlight(FlightDto flightDto);
 

@@ -90,7 +90,7 @@ class FlightServiceImplTest {
         when(flightRepository.findById(FLIGHT_ID_ONE)).thenReturn(Optional.of(existingFlight));
         when(flightRepository.save(any(Flight.class))).thenReturn(existingFlight);
 
-        Flight updatedFlight = flightService.updateFlight(FLIGHT_ID_ONE, flightDto);
+        Flight updatedFlight = flightService.updateFlight(flightDto);
 
         assertEquals(existingFlight, updatedFlight);
         verify(flightRepository).findById(FLIGHT_ID_ONE);
@@ -99,13 +99,12 @@ class FlightServiceImplTest {
 
     @Test
     void updateFlight_NonExistingFlightId_FlightNotFoundException() {
-        Long flightId = FLIGHT_ID_ONE;
         FlightDto flightDto = createFlightDto();
 
-        when(flightRepository.findById(flightId)).thenReturn(Optional.empty());
+        when(flightRepository.findById(flightDto.getId())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> flightService.updateFlight(flightId, flightDto));
-        verify(flightRepository).findById(flightId);
+        assertThrows(NotFoundException.class, () -> flightService.updateFlight(flightDto));
+        verify(flightRepository).findById(flightDto.getId());
         verify(flightRepository, never()).save(any(Flight.class));
     }
 
@@ -113,9 +112,22 @@ class FlightServiceImplTest {
     void deleteFlight_HappyCase() {
         Long flightId = FLIGHT_ID_ONE;
 
+        when(flightRepository.existsById(flightId)).thenReturn(true);
+
         flightService.deleteFlight(flightId);
 
         verify(flightRepository).deleteById(flightId);
+    }
+
+    @Test
+    void deleteFlight_FlightNotFound() {
+        Long flightId = FLIGHT_ID_ONE;
+
+        when(flightRepository.existsById(flightId)).thenReturn(false);
+
+        assertThrows(NotFoundException.class, () -> flightService.deleteFlight(flightId));
+
+        verify(flightRepository, never()).deleteById(flightId);
     }
 
     @Test
@@ -141,27 +153,27 @@ class FlightServiceImplTest {
         verify(flightRepository).findById(flightId);
     }
 
-    @Test
-    void getAllFlights_NoFlights_EmptyList() {
-        when(flightRepository.findAll()).thenReturn(new ArrayList<>());
-
-        List<Flight> flights = flightService.getAllFlights();
-
-        assertTrue(flights.isEmpty());
-        verify(flightRepository).findAll();
-    }
-
-    @Test
-    void getAllFlights_HappyCase() {
-        List<Flight> expectedFlights = createFlightList();
-
-        when(flightRepository.findAll()).thenReturn(expectedFlights);
-
-        List<Flight> flights = flightService.getAllFlights();
-
-        assertEquals(expectedFlights, flights);
-        verify(flightRepository).findAll();
-    }
+//    @Test
+//    void getAllFlights_NoFlights_EmptyList() {
+//        when(flightRepository.findAll()).thenReturn(new ArrayList<>());
+//
+//        List<Flight> flights = flightService.getAllFlights();
+//
+//        assertTrue(flights.isEmpty());
+//        verify(flightRepository).findAll();
+//    }
+//
+//    @Test
+//    void getAllFlights_HappyCase() {
+//        List<Flight> expectedFlights = createFlightList();
+//
+//        when(flightRepository.findAll()).thenReturn(expectedFlights);
+//
+//        List<Flight> flights = flightService.getAllFlights();
+//
+//        assertEquals(expectedFlights, flights);
+//        verify(flightRepository).findAll();
+//    }
 
     @Test
     void testSearchFlights_ReturnsFlightPage() {

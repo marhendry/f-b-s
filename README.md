@@ -5,11 +5,16 @@ The application is built using Java 17 and utilizes a PostgreSQL database.
 It can be run locally with configuration settings specified in the application.properties file or deployed using Docker with the command docker-compose up.
 
 ## Getting Started
-Set up a PostgreSQL database and configure the connection settings in the application.properties file.
-Run the application locally using the configured settings or use Docker with the command docker-compose up.
-Please refer to the API documentation or code comments for more detailed information on each endpoint and request/response formats.
+All the documentation required for this application is covered in Swagger.
+-> The application endpoints and documentation will be available at http://localhost:8080/swagger-ui/index.html
 
--> The application will be available at http://localhost:8080/swagger-ui/index.html
+To set up the application locally by IntelliJ IDEA, you need to create a PostgreSQL database and configure
+the connection settings in the application.properties file. Specify or modify the username and password accordingly.
+
+If Docker is installed on your machine, you can use the docker-compose up command to run both the application
+and the database for further endpoint testing.
+
+Please refer to the API documentation or code comments for more detailed information on each endpoint and request/response formats.
 
 ## User and Admin Controller
 The User and Admin Controller provides endpoints for user registration, login, updating user information, and registering administrators. Users can register with the roles CLIENT or ADMIN, and upon registration, a unique UUID is assigned to each user. User passwords are encrypted using bcrypt technology. Login requires a JWT token, which is generated during the login process. Users can update their email and password information.

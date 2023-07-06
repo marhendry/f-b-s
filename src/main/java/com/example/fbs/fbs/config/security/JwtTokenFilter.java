@@ -18,6 +18,8 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
 
+    public static final int BEGIN_INDEX_BEARER = 7;
+
     private final JwtService jwtService;
 
     private final CustomUserDetailsService userDetailsService;
@@ -27,7 +29,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String token = authorizationHeader.substring(7);
+            String token = authorizationHeader.substring(BEGIN_INDEX_BEARER);
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(jwtService.extractUsername(token));
 

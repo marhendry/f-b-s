@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Email;
+
 @Getter
 @Setter
 @Builder
@@ -23,6 +25,7 @@ public class UserRequestDto {
 
     @Schema(example = "user@example.com")
     @JsonProperty("email")
+    @Email
     private String email;
 
     @Schema(example = "password1234")

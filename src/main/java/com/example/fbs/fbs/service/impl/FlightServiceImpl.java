@@ -31,18 +31,22 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public Flight updateFlight(Long flightId, FlightDto flightDto) {
-        Flight flight = flightRepository.findById(flightId)
-                .orElseThrow(() -> new NotFoundException("Flight not found with id: " + flightId));
+    public Flight updateFlight(FlightDto flightDto) {
+        Flight flight = flightRepository.findById(flightDto.getId())
+                .orElseThrow(() -> new NotFoundException("Flight not found with id: " + flightDto.getId()));
         updateFlightWithNewData(flightDto, flight);
-        log.info("Updating flight with id {}: {}", flightId, flight);
+        log.info("Updating flight with id {}: {}", flightDto.getId(), flight);
         return flightRepository.save(flight);
     }
 
     @Override
     public void deleteFlight(Long flightId) {
         log.info("Deleting flight with id: {}", flightId);
-        flightRepository.deleteById(flightId);
+        if (flightRepository.existsById(flightId)) {
+            flightRepository.deleteById(flightId);
+        } else {
+            throw new NotFoundException("Flight not found with id: " + flightId);
+        }
     }
 
     @Override
@@ -53,9 +57,9 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public List<Flight> getAllFlights() {
+    public Page<Flight> getAllFlights(Pageable pageable) {
         log.info("Retrieving all flights");
-        return flightRepository.findAll();
+        return flightRepository.findAll(pageable);
     }
 
     @Override

@@ -25,7 +25,10 @@ public class SecurityConfig {
 
     private final JwtTokenFilter jwtTokenFilter;
 
+    private final AuthenticationEntryPoint authenticationEntryPoint;
     private final CorsConfigurationSource configurationSource;
+
+    private final AccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -36,18 +39,23 @@ public class SecurityConfig {
                 .configurationSource(configurationSource)
                 .and()
                 .authorizeHttpRequests(auth -> auth
-                        .antMatchers("/actuator/**").permitAll()
-                        .antMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/system/**", "/search-flights/**").permitAll()
+
+                        .antMatchers(HttpMethod.PUT, "/system/**").hasAuthority(ADMIN.name())
+                        .antMatchers(HttpMethod.PUT, "/system/**").hasAuthority(CLIENT.name())
                         .antMatchers(HttpMethod.POST, "/flights/**").hasAuthority(ADMIN.name())
                         .antMatchers(HttpMethod.DELETE, "/flights/**").hasAuthority(ADMIN.name())
                         .antMatchers(HttpMethod.PUT, "/flights/**").hasAuthority(ADMIN.name())
                         .antMatchers(HttpMethod.POST, "/bookings/**").hasAuthority(CLIENT.name())
+                        .antMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/system/**", "/search-flights/**").permitAll()
                         .anyRequest()
                         .authenticated())
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler);
 
         return http.build();
     }

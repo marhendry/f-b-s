@@ -21,7 +21,7 @@ public class UserUpdateRequestDto {
     @JsonProperty("name")
     private String name;
 
-    @Schema(example = "a4afcb30-49eb-4ea1-a4f7-6831a66bcd92")
-    @JsonProperty("uuid")
-    private String uuid;
+    @Schema(example = "user@example.com")
+    @JsonProperty("email")
+    private String email;
 }

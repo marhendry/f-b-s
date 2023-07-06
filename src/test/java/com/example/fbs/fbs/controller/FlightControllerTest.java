@@ -194,18 +194,16 @@ class FlightControllerTest {
 
     @Test
     void testUpdateFlight_ReturnsUpdatedFlightDto() throws Exception {
-        Long flightId = FLIGHT_ID_FIRST;
-
         Flight updatedFlight = new Flight();
         FlightDto updatedFlightDto = new FlightDto();
-        updatedFlightDto.setId(flightId);
+        updatedFlightDto.setId(FLIGHT_ID_FIRST);
         updatedFlightDto.setDepartureAirport(UPDATED_AIRPORT_1);
         updatedFlightDto.setArrivalAirport(UPDATED_AIRPORT_2);
         updatedFlightDto.setDepartureTime(LocalDateTime.of(YEAR, MONTH, DAY_OF_MONTH_2, HOUR, MINUTE));
         updatedFlightDto.setArrivalTime(LocalDateTime.of(YEAR, MONTH, DAY_OF_MONTH_2, HOUR_2, MINUTE));
         updatedFlightDto.setSeats(SEATS_OF_UPDATED_FLIGHT);
 
-        when(flightService.updateFlight(flightId, FLIGHT_DTO_2)).thenReturn(updatedFlight);
+        when(flightService.updateFlight(FLIGHT_DTO_2)).thenReturn(updatedFlight);
         when(flightMapper.toDto(updatedFlight)).thenReturn(updatedFlightDto);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -213,7 +211,7 @@ class FlightControllerTest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .put("/flights/{flightId}", flightId)
+                        .put("/flights")
                         .content(objectMapper.writeValueAsString(FLIGHT_DTO_2))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

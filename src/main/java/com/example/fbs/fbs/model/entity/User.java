@@ -15,11 +15,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.Email;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Entity
 @Table(name = "users")
@@ -35,7 +32,6 @@ public class User implements UserDetails {
 
     private String name;
 
-    @Email
     private String email;
 
     private String password;

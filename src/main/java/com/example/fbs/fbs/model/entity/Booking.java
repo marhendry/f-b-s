@@ -47,4 +47,12 @@ public class Booking {
 
     private int seatNumber;
 
+    public static Booking createBooking(User user, int seatCount, Flight bookedFlight) {
+        return new Booking()
+                .setUser(user)
+                .setFlight(bookedFlight)
+                .setSeatNumber(seatCount)
+                .setBookingTime(LocalDateTime.now());
+    }
+
 }

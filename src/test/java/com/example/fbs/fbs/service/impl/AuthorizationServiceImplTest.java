@@ -1,6 +1,7 @@
 package com.example.fbs.fbs.service.impl;
 
 import com.example.fbs.fbs.config.security.JwtService;
+import com.example.fbs.fbs.exception.NotFoundException;
 import com.example.fbs.fbs.model.dto.UserLoginRequestDto;
 import com.example.fbs.fbs.model.entity.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -99,9 +100,9 @@ class AuthorizationServiceImplTest {
     void generateToken_UserDetailsService_ThrowsException() {
         UserLoginRequestDto loginRequestDto = new UserLoginRequestDto(TEST_EMAIL_EXAMPLE_COM, PASSWORD);
         when(userDetailsService.loadUserByUsername(loginRequestDto.getEmail()))
-                .thenThrow(new RuntimeException("Failed to load user details"));
+                .thenThrow(new NotFoundException("Failed to load user details"));
 
-        assertThrows(RuntimeException.class, () -> authorizationService.generateToken(loginRequestDto));
+        assertThrows(NotFoundException.class, () -> authorizationService.generateToken(loginRequestDto));
         verify(userDetailsService).loadUserByUsername(loginRequestDto.getEmail());
         verify(jwtService, never()).generateToken(any());
     }

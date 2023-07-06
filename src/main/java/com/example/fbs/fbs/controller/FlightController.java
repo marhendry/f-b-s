@@ -70,7 +70,8 @@ public class FlightController {
 
     private final JwtService jwtService;
 
-    @Operation(summary = "create new Flight in the app")
+    @Operation(summary = "create new Flight in the app" +
+            "Dates should be provided in the format yyyy-MM-dd HH:mm")
     @PostMapping()
     public ResponseEntity<FlightDto> createFlight(@RequestBody FlightDto flightDto) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
@@ -83,11 +84,12 @@ public class FlightController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @Operation(summary = "update existing Flight in the app")
-    @PutMapping("/{flightId}")
+    @Operation(summary = "update existing Flight in the app" +
+            "Dates should be provided in the format yyyy-MM-dd HH:mm")
+    @PutMapping()
     public ResponseEntity<FlightDto> updateFlight(
-            @PathVariable Long flightId, @RequestBody FlightDto flightDto) {
-        Flight updatedFlight = flightService.updateFlight(flightId, flightDto);
+            @RequestBody FlightDto flightDto) {
+        Flight updatedFlight = flightService.updateFlight(flightDto);
         FlightDto updatedFlightDto = flightMapper.toDto(updatedFlight);
         return ResponseEntity.ok(updatedFlightDto);
     }
@@ -98,8 +100,8 @@ public class FlightController {
         flightService.deleteFlight(flightId);
         return ResponseEntity.noContent().build();
     }
-
-    @Operation(summary = "Get Flights")
+    @Operation(summary = "Search Flights" +
+            "Dates should be provided in the format yyyy-MM-dd HH:mm")
     @GetMapping("/search")
     public ResponseEntity<Page<FlightDto>> getFlights(
             @RequestParam(value = "id", required = false) Long id,
@@ -135,4 +137,14 @@ public class FlightController {
             return ResponseEntity.ok(new PageImpl<>(flightDtos, pageable, flightPage.getTotalElements()));
         }
     }
+
+    @Operation(summary = "Get all flights")
+    @GetMapping()
+    public ResponseEntity<Page<Flight>> getAllFlights(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                      @RequestParam(value = "size", defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Flight> flights = flightService.getAllFlights(pageable);
+        return ResponseEntity.ok(flights);
+    }
+
 }

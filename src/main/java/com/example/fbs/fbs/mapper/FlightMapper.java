@@ -15,7 +15,6 @@ public class FlightMapper {
                 .departureTime(flight.getDepartureTime())
                 .arrivalTime(flight.getArrivalTime())
                 .seats(flight.getSeats()).build();
-
     }
 
     public Flight toEntity(FlightDto flightDto) {

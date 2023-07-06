@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.example.fbs.fbs.model.entity.Booking.createBooking;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -44,14 +46,6 @@ public class BookingServiceImpl implements BookingService {
 
         log.info("Booking created for user: {}", user.getEmail());
         return booking;
-    }
-
-    private static Booking createBooking(User user, int seatCount, Flight bookedFlight) {
-        return new Booking()
-            .setUser(user)
-            .setFlight(bookedFlight)
-            .setSeatNumber(seatCount)
-            .setBookingTime(LocalDateTime.now());
     }
 
     @Override

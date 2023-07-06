@@ -1,6 +1,7 @@
 package com.example.fbs.fbs.controller;
 
 import com.example.fbs.fbs.config.security.JwtService;
+import com.example.fbs.fbs.exception.NotFoundException;
 import com.example.fbs.fbs.model.entity.Booking;
 import com.example.fbs.fbs.model.entity.User;
 import com.example.fbs.fbs.repository.UserRepository;
@@ -64,7 +65,7 @@ public class BookingController {
         }
         String email = jwtService.extractEmailFromToken(token);
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         Booking booking = bookingService.bookFlight(flightId, user, seatCount);
         return ResponseEntity.ok(booking);
@@ -80,7 +81,7 @@ public class BookingController {
         }
         String email = jwtService.extractEmailFromToken(token);
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         List<Booking> bookings = bookingService.getAllUserBookings(user);
 
