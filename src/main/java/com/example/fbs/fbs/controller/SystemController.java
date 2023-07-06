@@ -59,7 +59,7 @@ public class SystemController {
         boolean authenticated = userService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
         if (authenticated) {
             String token = jwtService.generateToken(customUserDetailsService.loadUserByUsername(loginRequest.getEmail()));
-            return ResponseEntity.ok("Login successful " + token);
+            return ResponseEntity.ok(token);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Client with provided credentials was not found");
         }
