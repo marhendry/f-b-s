@@ -1,7 +1,9 @@
 package com.example.fbs.fbs.service.impl;
 
 import com.example.fbs.fbs.exception.NotFoundException;
+import com.example.fbs.fbs.mapper.FlightCreateMapper;
 import com.example.fbs.fbs.mapper.FlightMapper;
+import com.example.fbs.fbs.model.dto.FlightCreateDto;
 import com.example.fbs.fbs.model.dto.FlightDto;
 import com.example.fbs.fbs.model.entity.Flight;
 import com.example.fbs.fbs.repository.FlightRepository;
@@ -59,24 +61,28 @@ class FlightServiceImplTest {
 
     @Mock
     private FlightRepository flightRepository;
+
     @Mock
     private FlightMapper flightMapper;
+
+    @Mock
+    private FlightCreateMapper flightCreateMapper;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        flightService = new FlightServiceImpl(flightRepository, flightMapper);
+        flightService = new FlightServiceImpl(flightRepository, flightCreateMapper);
     }
 
     @Test
     void createFlight_HappyCase() {
-        FlightDto flightDto = createFlightDto();
-        Flight expectedFlight = createFlightFromDto(flightDto);
+        FlightCreateDto flightCreateDto = createFlightFromCreationDto();
+        Flight expectedFlight = createFlightFromCreationDto(flightCreateDto);
 
-        when(flightMapper.toEntity(any(FlightDto.class))).thenReturn(expectedFlight);
+        when(flightCreateMapper.toEntity(any(FlightCreateDto.class))).thenReturn(expectedFlight);
         when(flightRepository.save(any(Flight.class))).thenReturn(expectedFlight);
 
-        Flight createdFlight = flightService.createFlight(flightDto);
+        Flight createdFlight = flightService.createFlight(flightCreateDto);
 
         assertEquals(expectedFlight, createdFlight);
         verify(flightRepository).save(any(Flight.class));
@@ -214,6 +220,16 @@ class FlightServiceImplTest {
         assertEquals(0, flightPage.getTotalElements());
     }
 
+    private FlightCreateDto createFlightFromCreationDto() {
+        return FlightCreateDto.builder()
+                .departureAirport(DEPARTURE_AIRPORT_A)
+                .arrivalAirport(ARRIVAL_AIRPORT_B)
+                .departureTime(LocalDateTime.of(YEAR, MONTH, DAY_OF_MONTH, HOUR_TEN, MINUTE_ZERO))
+                .arrivalTime(LocalDateTime.of(YEAR, MONTH, DAY_OF_MONTH, HOUR_TWELVE, MINUTE_ZERO))
+                .seats(SEATS_100)
+                .build();
+    }
+
     private FlightDto createFlightDto() {
         return FlightDto.builder()
                 .id(FLIGHT_ID_ONE)
@@ -223,6 +239,16 @@ class FlightServiceImplTest {
                 .arrivalTime(LocalDateTime.of(YEAR, MONTH, DAY_OF_MONTH, HOUR_TWELVE, MINUTE_ZERO))
                 .seats(SEATS_100)
                 .build();
+    }
+
+    private Flight createFlightFromCreationDto(FlightCreateDto flightDto) {
+        Flight flight = new Flight();
+        flight.setDepartureAirport(flightDto.getDepartureAirport());
+        flight.setArrivalAirport(flightDto.getArrivalAirport());
+        flight.setDepartureTime(flightDto.getDepartureTime());
+        flight.setArrivalTime(flightDto.getArrivalTime());
+        flight.setSeats(flightDto.getSeats());
+        return flight;
     }
 
     private Flight createFlightFromDto(FlightDto flightDto) {
@@ -235,7 +261,6 @@ class FlightServiceImplTest {
         flight.setSeats(flightDto.getSeats());
         return flight;
     }
-
     private List<Flight> createFlightList() {
         List<Flight> flights = new ArrayList<>();
         flights.add(createFlightFromDto(createFlightDto()));

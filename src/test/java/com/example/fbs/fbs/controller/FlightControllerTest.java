@@ -1,7 +1,9 @@
 package com.example.fbs.fbs.controller;
 
 import com.example.fbs.fbs.config.security.JwtService;
+import com.example.fbs.fbs.mapper.FlightCreateMapper;
 import com.example.fbs.fbs.mapper.FlightMapper;
+import com.example.fbs.fbs.model.dto.FlightCreateDto;
 import com.example.fbs.fbs.model.dto.FlightDto;
 import com.example.fbs.fbs.model.entity.Flight;
 import com.example.fbs.fbs.model.entity.Role;
@@ -132,6 +134,9 @@ class FlightControllerTest {
     private FlightMapper flightMapper;
 
     @Mock
+    private FlightCreateMapper flightCreateMapper;
+
+    @Mock
     private JwtService jwtService;
 
     @InjectMocks
@@ -147,13 +152,13 @@ class FlightControllerTest {
 
     @Test
     void testCreateFlightWithAdminAuthority() throws Exception {
-        FlightDto flightDto = new FlightDto();
+        FlightCreateDto flightDto = new FlightCreateDto();
         when(jwtService.extractUserDetails(ADMIN_TOKEN)).thenReturn(createUserWithAdminAuthority());
 
         Flight flight = new Flight();
         when(flightService.createFlight(flightDto)).thenReturn(flight);
-        FlightDto mappedFlightDto = new FlightDto();
-        when(flightMapper.toDto(flight)).thenReturn(mappedFlightDto);
+        FlightCreateDto mappedFlightDto = new FlightCreateDto();
+        when(flightCreateMapper.toDto(flight)).thenReturn(mappedFlightDto);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/flights")

@@ -1,7 +1,9 @@
 package com.example.fbs.fbs.controller;
 
 import com.example.fbs.fbs.config.security.JwtService;
+import com.example.fbs.fbs.mapper.FlightCreateMapper;
 import com.example.fbs.fbs.mapper.FlightMapper;
+import com.example.fbs.fbs.model.dto.FlightCreateDto;
 import com.example.fbs.fbs.model.dto.FlightDto;
 import com.example.fbs.fbs.model.entity.Flight;
 import com.example.fbs.fbs.service.FlightService;
@@ -67,19 +69,20 @@ public class FlightController {
     private final FlightService flightService;
 
     private final FlightMapper flightMapper;
+    private final FlightCreateMapper flightCreateMapper;
 
     private final JwtService jwtService;
 
     @Operation(summary = "create new Flight in the app" +
             "Dates should be provided in the format yyyy-MM-dd HH:mm")
     @PostMapping()
-    public ResponseEntity<FlightDto> createFlight(@RequestBody FlightDto flightDto) {
+    public ResponseEntity<FlightCreateDto> createFlight(@RequestBody FlightCreateDto flightCreateDto) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
         if (hasAdminAuthority(jwtService, extractTokenFromRequest(request))) {
-            Flight flight = flightService.createFlight(flightDto);
-            flightDto = flightMapper.toDto(flight);
-            return ResponseEntity.status(HttpStatus.CREATED).body(flightDto);
+            Flight flight = flightService.createFlight(flightCreateDto);
+            flightCreateDto = flightCreateMapper.toDto(flight);
+            return ResponseEntity.status(HttpStatus.CREATED).body(flightCreateDto);
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }

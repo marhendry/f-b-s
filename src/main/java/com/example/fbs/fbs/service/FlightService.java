@@ -1,5 +1,6 @@
 package com.example.fbs.fbs.service;
 
+import com.example.fbs.fbs.model.dto.FlightCreateDto;
 import com.example.fbs.fbs.model.dto.FlightDto;
 import com.example.fbs.fbs.model.entity.Flight;
 import org.springframework.data.domain.Page;
@@ -18,7 +19,7 @@ public interface FlightService {
 
     Flight updateFlight(FlightDto flightDto);
 
-    Flight createFlight(FlightDto flightDto);
+    Flight createFlight(FlightCreateDto flightCreateDto);
 
     Page<Flight> searchFlights(String departureAirport, String arrivalAirport,
                                LocalDateTime startDateTime, LocalDateTime endDateTime,
