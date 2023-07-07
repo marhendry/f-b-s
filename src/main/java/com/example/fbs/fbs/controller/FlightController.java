@@ -73,7 +73,7 @@ public class FlightController {
 
     private final JwtService jwtService;
 
-    @Operation(summary = "create new Flight in the app" +
+    @Operation(summary = "Create new Flight in the app. " +
             "Dates should be provided in the format yyyy-MM-dd HH:mm")
     @PostMapping()
     public ResponseEntity<FlightCreateDto> createFlight(@RequestBody FlightCreateDto flightCreateDto) {
@@ -87,7 +87,7 @@ public class FlightController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @Operation(summary = "update existing Flight in the app" +
+    @Operation(summary = "Update existing Flight in the app. " +
             "Dates should be provided in the format yyyy-MM-dd HH:mm")
     @PutMapping()
     public ResponseEntity<FlightDto> updateFlight(
@@ -97,14 +97,15 @@ public class FlightController {
         return ResponseEntity.ok(updatedFlightDto);
     }
 
-    @Operation(summary = "delete existing Flight in the app")
+    @Operation(summary = "Delete existing Flight in the app")
     @DeleteMapping("/{flightId}")
     public ResponseEntity<Void> deleteFlight(@PathVariable Long flightId) {
         flightService.deleteFlight(flightId);
         return ResponseEntity.noContent().build();
     }
-    @Operation(summary = "Search Flights" +
-            "Dates should be provided in the format yyyy-MM-dd HH:mm")
+    @Operation(summary = "Search Flights. " +
+            "Dates should be provided in the format yyyy-MM-dd HH:mm. " +
+            "The user has two mutually exclusive options: either enter the flight id or fill the other fields.")
     @GetMapping("/search")
     public ResponseEntity<Page<FlightDto>> getFlights(
             @RequestParam(value = "id", required = false) Long id,

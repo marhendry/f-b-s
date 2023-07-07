@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,13 +25,14 @@ import org.springframework.web.bind.annotation.RestController;
                 This controller allows users to register in the application. There are separate endpoints for
                 registering users with the roles CLIENT and ADMIN.
                                 
-                During registration, each user is assigned a unique UUID number, and their entered password 
-                is encrypted using bcrypt technology. The signup process involves users entering their email 
-                and password, which are validated. If the validation is successful, the password is encrypted 
-                and compared with the stored password in the database. Upon successful validation, the user, 
+                During registration, each user is assigned a unique UUID number, and their entered password
+                is encrypted using bcrypt technology. The signup process involves users entering their email
+                and password, which are validated. If the validation is successful, the password is encrypted
+                and compared with the stored password in the database. Upon successful validation, the user,
                 whether a client or an administrator, is assigned a JWT token.
                                 
-                Additionally, users have the ability to update their information, including their name and email."""
+                Additionally, users have the ability to update their information, including their name and email.
+                In case user change it's name or email, the user should logout and loging again in order to generate new token."""
 )
 @RestController
 @RequestMapping(value = "/system/")
@@ -67,7 +67,7 @@ public class SystemController {
 
     @Operation(summary = "Possibility to update user's email and password in the app")
     @PutMapping("/{uuid}")
-    public ResponseEntity<String> updateUserByUuid(@PathVariable String uuid, UserUpdateRequestDto updateRequest) {
+    public ResponseEntity<String> updateUserByUuid(@PathVariable String uuid, @RequestBody UserUpdateRequestDto updateRequest) {
         userService.updateUserByUuid(uuid, updateRequest);
         return ResponseEntity.ok("User updated successfully");
     }

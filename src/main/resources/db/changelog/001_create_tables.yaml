@@ -1,0 +1,87 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_users_table
+      author: Kazimir M.
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: users
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: uuid
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+              - column:
+                  name: email
+                  type:
+                    varchar(255)
+              - column:
+                  name: password
+                  type: varchar(255)
+              - column:
+                  name: role
+                  type: varchar(255)
+
+        - createTable:
+            tableName: flights
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: departure_airport
+                  type: varchar(255)
+              - column:
+                  name: arrival_airport
+                  type: varchar(255)
+              - column:
+                  name: departure_time
+                  type: timestamp
+              - column:
+                  name: arrival_time
+                  type: timestamp
+              - column:
+                  name: seats
+                  type: integer
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: bookings
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: booking_time
+                  type: timestamp
+              - column:
+                  name: flight_id
+                  type: bigint
+                  constraints:
+                    references: flights(id)
+                    foreignKeyName: FK_bookings_flights
+              - column:
+                  name: user_uuid
+                  type: varchar(255)
+                  constraints:
+                    references: users(uuid)
+                    foreignKeyName: FK_bookings_users
+              - column:
+                  name: seat_number
+                  type: integer

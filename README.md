@@ -1,7 +1,7 @@
 # Flight Booking System
 Flight Booking System is a Java application for managing flight bookings.
 It provides functionality for users to register, book flights, and manage their bookings. 
-The application is built using Java 17 and utilizes a PostgreSQL database. 
+The application is built using Java 17 and utilizes a PostgreSQL database + Liquibase. 
 It can be run locally with configuration settings specified in the application.properties file or deployed using Docker with the command docker-compose up.
 
 ## Getting Started
@@ -26,6 +26,7 @@ The Flight Controller allows administrators to manage flights in the application
 The Booking Controller enables users to book seats for flights, retrieve their bookings, and cancel bookings. Users can book seats by specifying the flight ID and the number of seats. The operations require a JWT token for authentication. Users can retrieve a list of all their bookings and cancel a booking by providing the booking ID. Cancelling a booking increases the seat count for the corresponding flight in the database.
 
 ## Technology Stack
-* Java 17
+* Java 17, SpringBoot
 * PostgreSQL
+* Liquibase
 * Docker (optional)

@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUserByUuid(String uuid, UserUpdateRequestDto updateRequest) {
-        log.info("Updating user with email: {}", uuid);
+        log.info("Updating user with uuid: {}", uuid);
         User user = userRepository.findByUuid(uuid)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         updateUserData(updateRequest, user);

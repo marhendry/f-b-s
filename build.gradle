@@ -84,7 +84,7 @@ dependencies {
 	testImplementation 'org.testcontainers:junit-jupiter'
 	testImplementation 'org.testcontainers:postgresql'
 
-//	implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.23.0'
+	implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.23.0'
 }
 
 dependencyManagement {
